@@ -1,0 +1,12 @@
+E:\libraries\Documents\Coding\school\2021-2\group_11\backend\target\debug\deps\cookie-174dc3495e108ea8.rmeta: C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\lib.rs C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\builder.rs C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\parse.rs C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\jar.rs C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\delta.rs C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\draft.rs
+
+E:\libraries\Documents\Coding\school\2021-2\group_11\backend\target\debug\deps\libcookie-174dc3495e108ea8.rlib: C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\lib.rs C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\builder.rs C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\parse.rs C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\jar.rs C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\delta.rs C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\draft.rs
+
+E:\libraries\Documents\Coding\school\2021-2\group_11\backend\target\debug\deps\cookie-174dc3495e108ea8.d: C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\lib.rs C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\builder.rs C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\parse.rs C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\jar.rs C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\delta.rs C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\draft.rs
+
+C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\lib.rs:
+C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\builder.rs:
+C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\parse.rs:
+C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\jar.rs:
+C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\delta.rs:
+C:\Users\sized\.cargo\registry\src\github.com-1ecc6299db9ec823\cookie-0.11.4\src\draft.rs:
