@@ -7,3 +7,5 @@ if error 1181
 			rustup toolchain install stable-x86_64-pc-windows-gnu
 			rustup default stable-x86_64-pc-windows-gnu
 		if this doesn't work, install MinGw, then try again				
+        
+        If all else fails, delete 'target' folder.
