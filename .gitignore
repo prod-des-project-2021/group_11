@@ -1,31 +1,31 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-front/node_modules
-front/.pnp
-front/.pnp.js
+/front/node_modules
+/front/.pnp
+/front/.pnp.js
 
 # testing
-front/coverage
+/front/coverage
 
 # production
-front/build
+/front/build
 
 # misc
-front/.DS_Store
-front/.env.local
-front/.env.development.local
-front/.env.test.local
-front/.env.production.local
-front/.vscode
-front/.idea
+/front/.DS_Store
+/front/.env.local
+/front/.env.development.local
+/front/.env.test.local
+/front/.env.production.local
+/front/.vscode
+/front/.idea
 
-front/npm-debug.log*
-front/yarn-debug.log*
-front/yarn-error.log*
+/front/npm-debug.log*
+/front/yarn-debug.log*
+/front/yarn-error.log*
 
 # Optional eslint cache
-front/.eslintcache
+/front/.eslintcache
 
-front/package-lock.json
-backend/target
+/front/package-lock.json
+/backend/target
