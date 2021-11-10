@@ -29,3 +29,4 @@
 
 /front/package-lock.json
 /backend/target
+/backend/Cargo.lock
