@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import ExploreContainer from '../components/ExploreContainer';
 import './Tab1.css';
 import React from 'react';
-
+import CanvasThing from './CanvasThing.js';
 
 
 let renderPage = <>
@@ -15,7 +15,7 @@ let renderPage = <>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <canvas id="canvas"/>
+        <CanvasThing/>
         <ExploreContainer name="Tab 1 page" />
       </IonContent>
     </IonPage>
