@@ -5,18 +5,18 @@ import ExploreContainer from '../components/ExploreContainer';
 import './Tab1.css';
 import React from 'react';
 import CanvasThing from './CanvasThing.js';
+import CanvasJs from './CanvasJs.jsx';
 
 
 let renderPage = <>
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Tab 1</IonTitle>
+          <IonTitle>Canvas</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <CanvasThing/>
-        <ExploreContainer name="Tab 1 page" />
+        <CanvasJs/>
       </IonContent>
     </IonPage>
 </>
