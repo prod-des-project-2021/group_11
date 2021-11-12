@@ -10,10 +10,11 @@ const Canvas = () => {
   return (
     <ReactSketchCanvas
       style={styles}
-      width="100%"
-      height="100%"
+      height='100vh'
+      width='100vw'
       strokeWidth={4}
       strokeColor="red"
+      backgroundImage='https://upload.wikimedia.org/wikipedia/commons/7/70/Graph_paper_scan_1600x1000_%286509259561%29.jpg'
     />
   );
 };
