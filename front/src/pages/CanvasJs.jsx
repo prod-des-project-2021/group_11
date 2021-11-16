@@ -116,4 +116,17 @@ const Canvas = props => {
   />
 }
 
+//drawing the measurment line
+
+const measurment_start = function () {
+  ctx.beginPath();
+  ctx.strokeStyle = '#00FF00';
+  ctx.moveTo(prevX, prevY);
+}
+
+const measurment_end = function () {
+  ctx.lineTo(currX, currY);
+  ctx.stroke();
+}
+
 export default Canvas
