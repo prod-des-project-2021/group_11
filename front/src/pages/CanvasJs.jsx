@@ -1,31 +1,31 @@
 import * as React from 'react';
-import {useState, useEffect, useRef} from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 const Canvas = props => {
 
   var [ctx, setctx] = useState([])
-  var [size, setSize]= useState(50)
+  var [size, setSize] = useState(50)
 
 
   //set up canvas, redraws canvas on screen size change
   useEffect(() => {
     let canvas = canvasRef.current
     canvas.setAttribute('width', window.innerWidth)
-    canvas.setAttribute('height',window.innerHeight)
+    canvas.setAttribute('height', window.innerHeight)
     const context = canvas.getContext('2d')
-    
+
     context.fillStyle = 'white'
     context.fillRect(0, 0, context.canvas.width, context.canvas.height)
-    setctx(context)    
-    
+    setctx(context)
+
     let i = 0
-    while(i < canvas.width){
+    while (i < canvas.width) {
       context.moveTo(i, 0)
       context.lineTo(i, canvas.height)
       i = i + 50
     }
     i = 0
-    while(i < canvas.height){
+    while (i < canvas.height) {
       context.moveTo(0, i)
       context.lineTo(canvas.width, i)
       context.strokeStyle = 'black'
@@ -60,13 +60,13 @@ const Canvas = props => {
   //current y and previous y
   var [currY, setYn] = useState(0)
   var [prevY, setYp] = useState(0)
-  
+
   //is drawing allowed?
   var [flag, setFlag] = useState(false)
 
   const canvasRef = useRef(null)
 
-  var draw = () => {
+  /*var draw = () => {
     ctx.beginPath();
     ctx.moveTo(prevX, prevY);
     ctx.lineTo(currX, currY);
@@ -74,59 +74,70 @@ const Canvas = props => {
     ctx.lineWidth = 2;
     ctx.stroke();
     ctx.closePath();
+  }*/
+
+  //drawing the measurment line
+
+  let [measurement_flag, setLine] = useState([]);
+  const measurement_start = () => {
+
+    if (measurement_flag.length < 2) {
+      measurement_flag.push({'x':currX, 'y':currY})
+      console.log(measurement_flag)
+    }
+    else if (measurement_flag.length == 2) {
+      console.log("jsx")
+      ctx.beginPath();
+      ctx.strokeStyle = '#00FF00';
+      ctx.moveTo(measurement_flag[0].x, measurement_flag[0].y);
+
+      ctx.lineTo(measurement_flag[1].x, measurement_flag[1].y);
+      ctx.stroke();
+      setLine([]);
+      console.log(measurement_flag)
+    }
   }
 
-  var begin = (x,y,name) =>{
-  
+  var begin = (x, y, name) => {
+
     //this switch checks wether to draw or not
-    switch(name){
+    switch (name) {
       case "down": {
         setXp(x)
         setYp(y - ctx.canvas.offsetTop)
         setXn(x)
         setYn(y - ctx.canvas.offsetTop)
         setFlag(true)
-        draw()
+        //draw()
+        measurement_start()
       } break;
       case "move": {
-        if(flag){
+        if (flag) {
           setXp(currX)
           setYp(currY)
           setXn(x)
           setYn(y - ctx.canvas.offsetTop)
-          draw()
+          //draw()
         }
-      }break;
-      default:{
+      } break;
+      default: {
         setFlag(false)
-      }break;
+      } break;
     }
-    
+
   }
 
 
-  return <canvas 
-  ref={canvasRef} {...props} 
-  
-  //these handle mouse position changes
-  onMouseMove={(e) => begin(e.clientX, e.clientY, "move")} 
-  onMouseDown={(e) => begin(e.clientX, e.clientY, "down")} 
-  onMouseUp={(e) => begin(e.clientX, e.clientY, "up")} 
-  onMouseLeave={(e) => begin(e.clientX, e.clientY, "out")}
+  return <canvas
+    ref={canvasRef} {...props}
+
+    //these handle mouse position changes
+    onMouseMove={(e) => begin(e.clientX, e.clientY, "move")}
+    onMouseDown={(e) => begin(e.clientX, e.clientY, "down")}
+    onMouseUp={(e) => begin(e.clientX, e.clientY, "up")}
+    onMouseLeave={(e) => begin(e.clientX, e.clientY, "out")}
   />
-}
 
-//drawing the measurment line
-
-const measurment_start = function () {
-  ctx.beginPath();
-  ctx.strokeStyle = '#00FF00';
-  ctx.moveTo(prevX, prevY);
-}
-
-const measurment_end = function () {
-  ctx.lineTo(currX, currY);
-  ctx.stroke();
 }
 
 export default Canvas
