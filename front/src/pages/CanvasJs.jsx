@@ -3,33 +3,6 @@ import { useState, useEffect, useRef } from 'react'
 
 const Canvas = props => {
 
-<<<<<<< HEAD
-  var [ctx, setctx] = useState([])
-  var [size, setSize] = useState(50)
-
-
-  //set up canvas, redraws canvas on screen size change
-  useEffect(() => {
-    let canvas = canvasRef.current
-    canvas.setAttribute('width', window.innerWidth)
-    canvas.setAttribute('height', window.innerHeight)
-    const context = canvas.getContext('2d')
-
-    context.fillStyle = 'white'
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height)
-    setctx(context)
-
-    let i = 0
-    while (i < canvas.width) {
-      context.moveTo(i, 0)
-      context.lineTo(i, canvas.height)
-      i = i + 50
-    }
-    i = 0
-    while (i < canvas.height) {
-      context.moveTo(0, i)
-      context.lineTo(canvas.width, i)
-=======
   var [ctx, setctx] = useState()
   var [size, setSize]= useState(50)
   var [imgData, setImgData] = useState()
@@ -52,7 +25,6 @@ const Canvas = props => {
         context.strokeStyle = 'black'
         i = i + 50
     }
->>>>>>> sketch-canvas
       context.strokeStyle = 'black'
       context.lineWidth = 3
       context.stroke()
@@ -110,7 +82,7 @@ const Canvas = props => {
 
   const canvasRef = useRef(null)
 
-  /*var draw = () => {
+  var draw = () => {
     ctx.beginPath();
     ctx.moveTo(prevX, prevY);
     ctx.lineTo(currX, currY);
@@ -118,7 +90,7 @@ const Canvas = props => {
     ctx.lineWidth = 2;
     ctx.stroke();
     ctx.closePath();
-  }*/
+  }
 
   //drawing the measurment line
 
@@ -142,12 +114,7 @@ const Canvas = props => {
     }
   }
 
-<<<<<<< HEAD
-  var begin = (x, y, name) => {
-
-=======
   var begin = (x,y,name) =>{
->>>>>>> sketch-canvas
     //this switch checks wether to draw or not
     switch (name) {
       case "down": {
@@ -156,26 +123,19 @@ const Canvas = props => {
         setXn(x)
         setYn(y - ctx.canvas.offsetTop + document.body.scrollTop)
         setFlag(true)
-<<<<<<< HEAD
         //draw()
         measurement_start()
-=======
         console.log(y, currY)
         draw()
->>>>>>> sketch-canvas
       } break;
       case "move": {
         if (flag) {
           setXp(currX)
           setYp(currY)
           setXn(x)
-<<<<<<< HEAD
-          setYn(y - ctx.canvas.offsetTop)
           //draw()
-=======
           setYn(y - ctx.canvas.offsetTop + document.body.scrollTop)
           draw()
->>>>>>> sketch-canvas
         }
       } break;
       default: {
@@ -186,16 +146,6 @@ const Canvas = props => {
   }
 
 
-<<<<<<< HEAD
-  return <canvas
-    ref={canvasRef} {...props}
-
-    //these handle mouse position changes
-    onMouseMove={(e) => begin(e.clientX, e.clientY, "move")}
-    onMouseDown={(e) => begin(e.clientX, e.clientY, "down")}
-    onMouseUp={(e) => begin(e.clientX, e.clientY, "up")}
-    onMouseLeave={(e) => begin(e.clientX, e.clientY, "out")}
-=======
   return <canvas 
   id = "canvasThing"
   ref={canvasRef} {...props} 
@@ -204,7 +154,6 @@ const Canvas = props => {
   onMouseDown={(e) => begin(e.pageX, e.pageY, "down")} 
   onMouseUp={(e) => begin(e.pageX, e.pageY, "up")} 
   onMouseLeave={(e) => begin(e.pageX, e.pageY, "out")}
->>>>>>> sketch-canvas
   />
 
 }
