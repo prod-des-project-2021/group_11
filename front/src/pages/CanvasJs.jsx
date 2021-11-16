@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 
 const Canvas = props => {
 
+<<<<<<< HEAD
   var [ctx, setctx] = useState([])
   var [size, setSize] = useState(50)
 
@@ -28,12 +29,34 @@ const Canvas = props => {
     while (i < canvas.height) {
       context.moveTo(0, i)
       context.lineTo(canvas.width, i)
-      context.strokeStyle = 'black'
-      i = i + 50
+=======
+  var [ctx, setctx] = useState()
+  var [size, setSize]= useState(50)
+  var [imgData, setImgData] = useState()
+
+  let drawGrid= (width, height, canvas, context) => {
+      canvas.setAttribute('width', width)
+      canvas.setAttribute('height',height)
+      context.fillStyle = 'white'
+      context.fillRect(0, 0, context.canvas.width, context.canvas.height)
+      let i = 0
+      while(i < canvas.width){
+        context.moveTo(i, 0)
+        context.lineTo(i, canvas.height)
+        i = i + 50
+      }
+      i = 0
+      while(i < canvas.height){
+        context.moveTo(0, i)
+        context.lineTo(canvas.width, i)
+        context.strokeStyle = 'black'
+        i = i + 50
     }
-    context.strokeStyle = 'black'
-    context.lineWidth = 3
-    context.stroke()
+>>>>>>> sketch-canvas
+      context.strokeStyle = 'black'
+      context.lineWidth = 3
+      context.stroke()
+    
 
     /* for loop takes up too much memory for some reason, using 2 while loops works for some reason?
     for (let i = 0; i <= canvas.width; i + 50){
@@ -48,10 +71,31 @@ const Canvas = props => {
       context.strokeStyle = 'black'
       context.stroke()
     }*/
+  }
+
+
+  //set up canvas, redraws canvas on screen size change
+  useEffect(() => {
+
+    let canvas = canvasRef.current
+    canvas.setAttribute('width', window.innerWidth)
+    canvas.setAttribute('height',window.innerHeight)
+    const context = canvas.getContext('2d')
+
+    setctx(context)    
+    drawGrid(canvas.width, canvas.height, canvas, context)  
+    setImgData(context.getImageData(0,0,canvas.width,canvas.height))
 
     //'https://upload.wikimedia.org/wikipedia/commons/7/70/Graph_paper_scan_1600x1000_%286509259561%29.jpg'
-  }, [window.innerWidth, window.innerHeight])
+  }, [])
 
+  useEffect(() =>{
+    if(ctx != undefined || ctx != null){
+      setImgData(ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height))
+      drawGrid(window.innerWidth, window.innerHeight, ctx.canvas, ctx)
+      ctx.putImageData(imgData, 0, 0)
+    }
+  },[window.innerWidth, window.innerHeight])
 
   //current x and previous x
   var [currX, setXn] = useState(0)
@@ -98,26 +142,40 @@ const Canvas = props => {
     }
   }
 
+<<<<<<< HEAD
   var begin = (x, y, name) => {
 
+=======
+  var begin = (x,y,name) =>{
+>>>>>>> sketch-canvas
     //this switch checks wether to draw or not
     switch (name) {
       case "down": {
         setXp(x)
-        setYp(y - ctx.canvas.offsetTop)
+        setYp(y - ctx.canvas.offsetTop + document.body.scrollTop)
         setXn(x)
-        setYn(y - ctx.canvas.offsetTop)
+        setYn(y - ctx.canvas.offsetTop + document.body.scrollTop)
         setFlag(true)
+<<<<<<< HEAD
         //draw()
         measurement_start()
+=======
+        console.log(y, currY)
+        draw()
+>>>>>>> sketch-canvas
       } break;
       case "move": {
         if (flag) {
           setXp(currX)
           setYp(currY)
           setXn(x)
+<<<<<<< HEAD
           setYn(y - ctx.canvas.offsetTop)
           //draw()
+=======
+          setYn(y - ctx.canvas.offsetTop + document.body.scrollTop)
+          draw()
+>>>>>>> sketch-canvas
         }
       } break;
       default: {
@@ -128,6 +186,7 @@ const Canvas = props => {
   }
 
 
+<<<<<<< HEAD
   return <canvas
     ref={canvasRef} {...props}
 
@@ -136,6 +195,16 @@ const Canvas = props => {
     onMouseDown={(e) => begin(e.clientX, e.clientY, "down")}
     onMouseUp={(e) => begin(e.clientX, e.clientY, "up")}
     onMouseLeave={(e) => begin(e.clientX, e.clientY, "out")}
+=======
+  return <canvas 
+  id = "canvasThing"
+  ref={canvasRef} {...props} 
+  //these handle mouse position changes
+  onMouseMove={(e) => begin(e.pageX, e.pageY, "move")} 
+  onMouseDown={(e) => begin(e.pageX, e.pageY, "down")} 
+  onMouseUp={(e) => begin(e.pageX, e.pageY, "up")} 
+  onMouseLeave={(e) => begin(e.pageX, e.pageY, "out")}
+>>>>>>> sketch-canvas
   />
 
 }

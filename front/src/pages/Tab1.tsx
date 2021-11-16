@@ -8,22 +8,20 @@ import CanvasThing from './CanvasThing.js';
 import CanvasJs from './CanvasJs.jsx';
 
 
-let renderPage = <>
-    <IonPage>
+
+
+
+const Tab1: React.FC = () => {
+
+//removed evil <ioncontent> that caused bullshittery with my precious 
+  return (<IonPage>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Canvas</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
-        <CanvasJs/>
-      </IonContent>
-    </IonPage>
-</>
-
-
-const Tab1: React.FC = () => {
-  return (renderPage);
+        <CanvasJs />
+    </IonPage>);
 };
 
 export default Tab1;
