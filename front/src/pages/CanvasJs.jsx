@@ -95,22 +95,18 @@ const Canvas = props => {
   //drawing the measurment line
 
   let [measurement_flag, setLine] = useState([]);
-  const measurement_start = () => {
+  var measurement_start = (x, y) => {
+    if (prevX !== currX || prevY !== currY) {
 
-    if (measurement_flag.length < 2) {
-      measurement_flag.push({'x':currX, 'y':currY})
-      console.log(measurement_flag)
-    }
-    else if (measurement_flag.length == 2) {
+    
       console.log("jsx")
       ctx.beginPath();
       ctx.strokeStyle = '#00FF00';
-      ctx.moveTo(measurement_flag[0].x, measurement_flag[0].y);
-
-      ctx.lineTo(measurement_flag[1].x, measurement_flag[1].y);
+      ctx.moveTo(prevX, prevY);
+      ctx.lineWidth = 3;
+      ctx.lineTo(currX, currY);
       ctx.stroke();
-      setLine([]);
-      console.log(measurement_flag)
+      ctx.closePath();
     }
   }
 
@@ -124,8 +120,8 @@ const Canvas = props => {
         setYn(y - ctx.canvas.offsetTop + document.body.scrollTop)
         setFlag(true)
         //draw()
-        measurement_start()
-        console.log(y, currY)
+        measurement_start(currX, currY)
+        
         draw()
       } break;
       case "move": {
