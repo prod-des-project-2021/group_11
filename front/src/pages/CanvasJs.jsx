@@ -1,3 +1,4 @@
+import { createPublicKey } from 'crypto';
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react'
 
@@ -13,6 +14,7 @@ const Canvas = props => {
       context.fillStyle = 'white'
       context.fillRect(0, 0, context.canvas.width, context.canvas.height)
       let i = 0
+      context.beginPath()
       while(i < canvas.width){
         context.moveTo(i, 0)
         context.lineTo(i, canvas.height)
@@ -28,7 +30,7 @@ const Canvas = props => {
       context.strokeStyle = 'black'
       context.lineWidth = 3
       context.stroke()
-    
+      context.closePath()
 
     /* for loop takes up too much memory for some reason, using 2 while loops works for some reason?
     for (let i = 0; i <= canvas.width; i + 50){
@@ -92,44 +94,51 @@ const Canvas = props => {
     ctx.closePath();
   }
 
+  let [slcKey, setKey] = useState()
+  var keyPressed = (key) => {
+    setKey(key);
+  }
   //drawing the measurment line
 
-  let [measurement_flag, setLine] = useState([]);
-  var measurement_start = (x, y) => {
-    if (prevX !== currX || prevY !== currY) {
-
-    
-      console.log("jsx")
-      ctx.beginPath();
-      ctx.strokeStyle = '#00FF00';
+  var measurement_start = () => {
+      ctx.beginPath()
       ctx.moveTo(prevX, prevY);
+      ctx.strokeStyle = '#00FF00';
       ctx.lineWidth = 3;
       ctx.lineTo(currX, currY);
       ctx.stroke();
-      ctx.closePath();
-    }
+      ctx.closePath()
   }
 
   var begin = (x,y,name) =>{
     //this switch checks wether to draw or not
     switch (name) {
       case "down": {
+        if(slcKey != undefined){
+          console.log("measuring active")
+          setXn(x)
+          setYn(y - ctx.canvas.offsetTop + document.body.scrollTop)
+        }
+        else{
         setXp(x)
         setYp(y - ctx.canvas.offsetTop + document.body.scrollTop)
         setXn(x)
         setYn(y - ctx.canvas.offsetTop + document.body.scrollTop)
         setFlag(true)
-        //draw()
-        measurement_start(currX, currY)
-        
-        draw()
+        }
       } break;
+      case "up":{
+        setFlag(false)
+        if(slcKey != undefined)
+          measurement_start()
+      }break;
       case "move": {
+        if(slcKey != undefined)
+          setFlag(false)
         if (flag) {
           setXp(currX)
           setYp(currY)
           setXn(x)
-          //draw()
           setYn(y - ctx.canvas.offsetTop + document.body.scrollTop)
           draw()
         }
@@ -146,10 +155,13 @@ const Canvas = props => {
   id = "canvasThing"
   ref={canvasRef} {...props} 
   //these handle mouse position changes
+  onKeyDown={(e) => keyPressed(e.key)}
+  onKeyUp={(e) => keyPressed()}
   onMouseMove={(e) => begin(e.pageX, e.pageY, "move")} 
   onMouseDown={(e) => begin(e.pageX, e.pageY, "down")} 
-  onMouseUp={(e) => begin(e.pageX, e.pageY, "up")} 
   onMouseLeave={(e) => begin(e.pageX, e.pageY, "out")}
+  onMouseUp={(e) => begin(e.pageX, e.pageY, "up")}
+  tabIndex={0}
   />
 
 }
