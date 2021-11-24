@@ -1,39 +1,40 @@
 import { createPublicKey } from 'crypto';
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react'
+import { IonToggle } from '@ionic/react';
 
 const Canvas = props => {
 
   var [ctx, setctx] = useState()
-  var [size, setSize]= useState(50)
+  var [size, setSize] = useState(50)
   var [imgData, setImgData] = useState()
 
   //units array will probably look something like this [{unit: {x: 1, y:1,size:1}}]
   var [units, modUnits] = useState([])
 
-  let drawGrid= (width, height, canvas, context) => {
-      canvas.setAttribute('width', width)
-      canvas.setAttribute('height',height)
-      context.fillStyle = 'white'
-      context.fillRect(0, 0, context.canvas.width, context.canvas.height)
-      let i = 0
-      context.beginPath()
-      while(i < canvas.width){
-        context.moveTo(i, 0)
-        context.lineTo(i, canvas.height)
-        i = i + 50
-      }
-      i = 0
-      while(i < canvas.height){
-        context.moveTo(0, i)
-        context.lineTo(canvas.width, i)
-        context.strokeStyle = 'black'
-        i = i + 50
+  let drawGrid = (width, height, canvas, context) => {
+    canvas.setAttribute('width', width)
+    canvas.setAttribute('height', height)
+    context.fillStyle = 'white'
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height)
+    let i = 0
+    context.beginPath()
+    while (i < canvas.width) {
+      context.moveTo(i, 0)
+      context.lineTo(i, canvas.height)
+      i = i + 50
     }
+    i = 0
+    while (i < canvas.height) {
+      context.moveTo(0, i)
+      context.lineTo(canvas.width, i)
       context.strokeStyle = 'black'
-      context.lineWidth = 3
-      context.stroke()
-      context.closePath()
+      i = i + 50
+    }
+    context.strokeStyle = 'black'
+    context.lineWidth = 3
+    context.stroke()
+    context.closePath()
 
     /* for loop takes up too much memory for some reason, using 2 while loops works for some reason?
     for (let i = 0; i <= canvas.width; i + 50){
@@ -56,24 +57,24 @@ const Canvas = props => {
 
     let canvas = canvasRef.current
     canvas.setAttribute('width', window.innerWidth)
-    canvas.setAttribute('height',window.innerHeight)
+    canvas.setAttribute('height', window.innerHeight)
     const context = canvas.getContext('2d')
 
-    setctx(context)    
-    drawGrid(canvas.width, canvas.height, canvas, context)  
-    setImgData(context.getImageData(0,0,canvas.width,canvas.height))
+    setctx(context)
+    drawGrid(canvas.width, canvas.height, canvas, context)
+    setImgData(context.getImageData(0, 0, canvas.width, canvas.height))
 
     //'https://upload.wikimedia.org/wikipedia/commons/7/70/Graph_paper_scan_1600x1000_%286509259561%29.jpg'
   }, [])
 
-  useEffect(() =>{
-    if(ctx != undefined || ctx != null){
-      setImgData(ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height))
+  useEffect(() => {
+    if (ctx != undefined || ctx != null) {
+      setImgData(ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height))
       drawGrid(window.innerWidth, window.innerHeight, ctx.canvas, ctx)
       ctx.putImageData(imgData, 0, 0)
       console.log(imgData)
     }
-  },[window.innerWidth, window.innerHeight])
+  }, [window.innerWidth, window.innerHeight])
 
   //current x and previous x
   var [currX, setXn] = useState(0)
@@ -98,54 +99,54 @@ const Canvas = props => {
     ctx.closePath();
   }
 
-  let [slcKey, setKey] = useState()
+  let [slcKey, setKey] = useState(false)
   var keyPressed = (key) => {
     setKey(key);
   }
   //drawing the measurment line
-  let addUnit = () =>{
+  let addUnit = () => {
     ctx.beginPath()
-    ctx.fillStyle = '#'+(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0')
+    ctx.fillStyle = '#' + (Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0')
     console.log(ctx.fillStyle)
-    ctx.arc(Math.floor(Math.random()*(window.innerWidth)), Math.floor(Math.random()*(window.innerHeight)),25,0, 2*Math.PI, true)
+    ctx.arc(Math.floor(Math.random() * (window.innerWidth)), Math.floor(Math.random() * (window.innerHeight)), 25, 0, 2 * Math.PI, true)
     ctx.fill()
     console.log("perkele")
     ctx.closePath()
   }
   var measurement_start = () => {
-      ctx.beginPath()
-      ctx.moveTo(prevX, prevY);
-      ctx.strokeStyle = '#00FF00';
-      ctx.lineWidth = 3;
-      ctx.lineTo(currX, currY);
-      ctx.stroke();
-      ctx.closePath()
+    ctx.beginPath()
+    ctx.moveTo(prevX, prevY);
+    ctx.strokeStyle = '#00FF00';
+    ctx.lineWidth = 3;
+    ctx.lineTo(currX, currY);
+    ctx.stroke();
+    ctx.closePath()
   }
 
-  var begin = (x,y,name) =>{
+  var begin = (x, y, name) => {
     //this switch checks wether to draw or not
     switch (name) {
       case "down": {
-        if(slcKey != undefined){
+        if (slcKey) {
           console.log("measuring active")
           setXn(x)
           setYn(y - ctx.canvas.offsetTop + document.body.scrollTop)
         }
-        else{
-        setXp(x)
-        setYp(y - ctx.canvas.offsetTop + document.body.scrollTop)
-        setXn(x)
-        setYn(y - ctx.canvas.offsetTop + document.body.scrollTop)
-        setFlag(true)
+        else {
+          setXp(x)
+          setYp(y - ctx.canvas.offsetTop + document.body.scrollTop)
+          setXn(x)
+          setYn(y - ctx.canvas.offsetTop + document.body.scrollTop)
+          setFlag(true)
         }
       } break;
-      case "up":{
+      case "up": {
         setFlag(false)
-        if(slcKey != undefined)
+        if (slcKey)
           measurement_start()
-      }break;
+      } break;
       case "move": {
-        if(slcKey != undefined)
+        if (slcKey)
           setFlag(false)
         if (flag) {
           setXp(currX)
@@ -164,21 +165,23 @@ const Canvas = props => {
 
 
 
-  return <><button onClick={() => addUnit()} style={{display: "float"}}>click me you fucker</button>
-  <canvas 
-  id = "canvasThing"
-  ref={canvasRef} {...props} 
-  //these handle mouse position changes
-  onKeyDown={(e) => keyPressed(e.key)}
-  onKeyUp={(e) => keyPressed()}
-  onMouseMove={(e) => begin(e.pageX, e.pageY, "move")} 
-  onMouseDown={(e) => begin(e.pageX, e.pageY, "down")} 
-  onMouseLeave={(e) => begin(e.pageX, e.pageY, "out")}
-  onMouseUp={(e) => begin(e.pageX, e.pageY, "up")}
-  tabIndex={0}
-  />
-  
-</>
+  return <>
+
+    <button onClick={() => addUnit()} style={{ display: "float" }}>click me you fucker</button>
+    <IonToggle checked={slcKey} onIonChange={e => setKey(e.detail.checked)} style={{ display: "float"}}/>
+
+    <canvas
+      id="canvasThing"
+      ref={canvasRef} {...props}
+      //these handle mouse position changes
+      onMouseMove={(e) => begin(e.pageX, e.pageY, "move")}
+      onMouseDown={(e) => begin(e.pageX, e.pageY, "down")}
+      onMouseLeave={(e) => begin(e.pageX, e.pageY, "out")}
+      onMouseUp={(e) => begin(e.pageX, e.pageY, "up")}
+      tabIndex={0}
+    />
+
+  </>
 }
 
 export default Canvas
