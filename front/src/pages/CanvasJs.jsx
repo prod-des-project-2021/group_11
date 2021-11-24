@@ -8,6 +8,9 @@ const Canvas = props => {
   var [size, setSize]= useState(50)
   var [imgData, setImgData] = useState()
 
+  //units array will probably look something like this [{unit: {x: 1, y:1,size:1}}]
+  var [units, modUnits] = useState([])
+
   let drawGrid= (width, height, canvas, context) => {
       canvas.setAttribute('width', width)
       canvas.setAttribute('height',height)
@@ -68,6 +71,7 @@ const Canvas = props => {
       setImgData(ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height))
       drawGrid(window.innerWidth, window.innerHeight, ctx.canvas, ctx)
       ctx.putImageData(imgData, 0, 0)
+      console.log(imgData)
     }
   },[window.innerWidth, window.innerHeight])
 
@@ -99,7 +103,15 @@ const Canvas = props => {
     setKey(key);
   }
   //drawing the measurment line
-
+  let addUnit = () =>{
+    ctx.beginPath()
+    ctx.fillStyle = '#'+(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0')
+    console.log(ctx.fillStyle)
+    ctx.arc(Math.floor(Math.random()*(window.innerWidth)), Math.floor(Math.random()*(window.innerHeight)),25,0, 2*Math.PI, true)
+    ctx.fill()
+    console.log("perkele")
+    ctx.closePath()
+  }
   var measurement_start = () => {
       ctx.beginPath()
       ctx.moveTo(prevX, prevY);
@@ -151,7 +163,9 @@ const Canvas = props => {
   }
 
 
-  return <canvas 
+
+  return <><button onClick={() => addUnit()} style={{display: "float"}}>click me you fucker</button>
+  <canvas 
   id = "canvasThing"
   ref={canvasRef} {...props} 
   //these handle mouse position changes
@@ -163,7 +177,8 @@ const Canvas = props => {
   onMouseUp={(e) => begin(e.pageX, e.pageY, "up")}
   tabIndex={0}
   />
-
+  
+</>
 }
 
 export default Canvas
