@@ -168,7 +168,7 @@ const Canvas = props => {
   return <>
 
     <button onClick={() => addUnit()} style={{ display: "float" }}>click me you fucker</button>
-    <IonToggle checked={slcKey} onIonChange={e => setKey(e.detail.checked)} style={{ display: "float"}}/>
+    <IonToggle checked={slcKey} onIonChange={e => setKey(e.detail.checked)}/>
 
     <canvas
       id="canvasThing"
