@@ -1,6 +1,8 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect, Suspense } from 'react'
 import ReactDOM from 'react-dom'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, extend } from '@react-three/fiber'
+import { OrbitControls} from "@react-three/drei"
+
 
 
 function Box(props) {
@@ -26,37 +28,20 @@ function Box(props) {
   )
 }
 
-/*function Keen() {
-    const orbit = useRef()
-    const transform = useRef()
-    const mode = useControl("mode", { type: "select", items: ["scale", "rotate", "translate"] })
-    useEffect(() => {
-      if (transform.current) {
-        const controls = transform.current
-        controls.setMode(mode)
-        const callback = event => (orbit.current.enabled = !event.value)
-        controls.addEventListener("dragging-changed", callback)
-        return () => controls.removeEventListener("dragging-changed", callback)
-      }
-    })
-    return (
-      <>
-        <TransformControls ref={transform}>
-        </TransformControls>
-        <OrbitControls ref={orbit} />
-      </>
-    )
-  }*/
-  
 
 export default function thisCanvas (props){
 
     return <>
         <Canvas id="models">
-          <ambientLight />
-          <pointLight position={[10, 10, 10]} />
+          <gridHelper/>
+          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+            <pointLight position={[-10, -10, -10]} />
+          
           <Box position={[-1.2, 0, 0]} />
-          <Box position={[1.2, 0, 0]} />
+          <OrbitControls camera={props.camera}>
+          </OrbitControls>
+          
+
         </Canvas>
     </>
 }
