@@ -28,6 +28,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.2",
     "react-sketch-canvas": "^6.1.0",
+    "react-three-gui": "^0.4.2",
     "three": "^0.134.0",
     "typescript": "^4.1.3",
     "web-vitals": "^0.2.4",

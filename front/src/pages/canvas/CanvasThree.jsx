@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useRef } from "react"
-import { Canvas} from "react-three-fiber"
+import { Canvas } from "@react-three/fiber"
 import { Controls, useControl } from "react-three-gui"
 import { OrbitControls, TransformControls } from "@react-three/drei"
 
