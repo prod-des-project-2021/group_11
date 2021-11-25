@@ -24,10 +24,10 @@ let [shapeArray, setShapeArray] = useState([])
       <IonHeader>
         <IonToolbar>
           <IonTitle>Map</IonTitle>
-          <CanvasThree id="models"/>
+          
         </IonToolbar>
       </IonHeader>
-        
+      <CanvasThree id="models"/>
     </IonPage>);
 };
 
