@@ -1,11 +1,8 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import { useEffect } from 'react';
-import { render } from '@testing-library/react';
-import ExploreContainer from '../components/ExploreContainer';
+import {IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import './Tab1.css';
-import React from 'react';
-import CanvasThing from './CanvasThing.js';
-import CanvasJs from './CanvasJs.jsx';
+import React, {useState} from 'react';
+import CanvasThree from './canvas/CanvasThree.jsx';
+
 
 
 
@@ -13,14 +10,24 @@ import CanvasJs from './CanvasJs.jsx';
 
 const Tab1: React.FC = () => {
 
+let [shapeArray, setShapeArray] = useState([])
+/*const addShape =(n:any)=>{
+  let tempArray:any = shapeArray.map(i => i)
+  let newArray = tempArray.push(n)
+  setShapeArray(newArray)
+
+}*/
+
+
 //removed evil <ioncontent> that caused bullshittery with my precious 
   return (<IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Canvas</IonTitle>
+          <IonTitle>Map</IonTitle>
+          <CanvasThree id="models"/>
         </IonToolbar>
       </IonHeader>
-        <CanvasJs />
+        
     </IonPage>);
 };
 
