@@ -43,7 +43,7 @@ export default function thisCanvas(props) {
       </OrbitControls>
 
       <Line
-        points={[[0, 0, 0], [12, 50, 60]]}       // Array of points
+        points={[[0, 0, 0], [-1.2, 0, 0]]}       // Array of points
         color="red"                   // Default
         lineWidth={1}                   // In pixels (default)
         dashed={true}                  // Default
