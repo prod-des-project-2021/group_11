@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, Suspense } from 'react'
 import ReactDOM from 'react-dom'
 import { Canvas, useFrame, extend } from '@react-three/fiber'
-import { OrbitControls} from "@react-three/drei"
+import { OrbitControls, Line } from "@react-three/drei"
 
 
 
@@ -29,19 +29,27 @@ function Box(props) {
 }
 
 
-export default function thisCanvas (props){
 
-    return <>
-        <Canvas id="models">
-          <gridHelper/>
-          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-            <pointLight position={[-10, -10, -10]} />
-          
-          <Box position={[-1.2, 0, 0]} />
-          <OrbitControls camera={props.camera}>
-          </OrbitControls>
-          
+export default function thisCanvas(props) {
 
-        </Canvas>
-    </>
+  return <>
+    <Canvas id="models">
+      <gridHelper />
+      <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+      <pointLight position={[-10, -10, -10]} />
+
+      <Box position={[-1.2, 0, 0]} />
+      <OrbitControls camera={props.camera}>
+      </OrbitControls>
+
+      <Line
+        points={[[0, 0, 0], [12, 50, 60]]}       // Array of points
+        color="red"                   // Default
+        lineWidth={1}                   // In pixels (default)
+        dashed={true}                  // Default
+        
+      />
+
+    </Canvas>
+  </>
 }
