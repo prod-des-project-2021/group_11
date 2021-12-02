@@ -2,27 +2,29 @@ import { useRef, useState, useEffect, Suspense } from 'react'
 import ReactDOM from 'react-dom'
 import { Canvas, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, PerspectiveCamera, TransformControls, Line } from "@react-three/drei"
+import { IonToggle } from '@ionic/react';
 
 export default function ThisCanvas(props) {
   let [controlTarget, setTarget] = useState()
   var [shapeArray, setShapeArray] = useState([])
   let [size, divs] = [100, 100]
   const [checked, setChecked] = useState(false);
+  
 
   useEffect(() => {
-    setShapeArray([<Line
-      points={[[0, 0, 0], [-1.2, 0, 0]]}       // Array of points
-      color="red"                   // Default
-      lineWidth={1}                   // In pixels (default)
-      dashed={true}                  // Default
-
-    />])
+    setShapeArray([])
   }, [])
 
   let addShape = () => {
     let [x, z] = [(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1), (Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1)]
     setShapeArray([...shapeArray, <Box position={[x, 0, z]} />])
   }
+
+  let line = checked ? <Line points={[[0, 0, 0], [-1.2, 0, 0]]} color="red" lineWidth={1} dashed={true} /> :null
+
+  
+
+
 
   function Box(props) {
     // This reference will give us direct access to the mesh
@@ -50,7 +52,7 @@ export default function ThisCanvas(props) {
 
   return <>
     <button onClick={() => addShape()}>add box</button>
-    <IonToggle checked={checked}/>
+    <IonToggle checked={checked} onIonChange={e => setChecked(e.detail.checked)} />
     <Canvas id="models" onClick={() => console.log("perjelk")}>
       <pointLight position={[10, 10, 10]} />
       <gridHelper args={[size, divs]} />
@@ -58,6 +60,7 @@ export default function ThisCanvas(props) {
       </TransformControls>
       <OrbitControls makeDefault />
       {shapeArray}
+      {line}
     </Canvas>
   </>
 }
