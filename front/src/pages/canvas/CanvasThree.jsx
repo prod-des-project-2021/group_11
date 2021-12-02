@@ -7,6 +7,7 @@ export default function ThisCanvas(props) {
   let [controlTarget, setTarget] = useState()
   var [shapeArray, setShapeArray] = useState([])
   let [size, divs] = [100, 100]
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
     setShapeArray([<Line
@@ -49,6 +50,7 @@ export default function ThisCanvas(props) {
 
   return <>
     <button onClick={() => addShape()}>add box</button>
+    <IonToggle checked={checked}/>
     <Canvas id="models" onClick={() => console.log("perjelk")}>
       <pointLight position={[10, 10, 10]} />
       <gridHelper args={[size, divs]} />
