@@ -10,22 +10,20 @@ export default function ThisCanvas(props) {
   let [shapeArray, setShapeArray] = useState([])
   let [size, divs] = [100, 100]
   const [checked, setChecked] = useState(false);
-
-  let [oldTarget, setOldTarget] = useState()
-
   
-  //position update functiona
-  let getPos = (pos, id) => {
-  
-  }
 
-  //console.log(shapeArray.find(i=> i.key==null))
+  useEffect(() => {
+    setShapeArray([])
+  }, [])
 
   let addShape = (newSize) => {
     let [x, z] = [(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1), (Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1)]
     //setShapeArray([...shapeArray, <Cylinder position={[x, 0, z]} />])
     setShapeArray([...shapeArray, <Cylinder position={[0, 0, 0]} newSize={newSize} /*getPos={(pos, id)=>getPos(pos,id)}*//>])
   }
+
+
+  let line = checked ? <Line points={[[0, 0, 0], [-1.2, 0, 0]]} color="red" lineWidth={1} dashed={true} /> :null
   console.log(shapeArray.length)
   function Cylinder(props) {
     // This reference will give us direct access to the mesh
@@ -64,7 +62,7 @@ export default function ThisCanvas(props) {
   return <>
     <button onClick={() => addShape("gargantuan")}>add box</button>
     <button >get Json data</button>
-    <IonToggle checked={checked}/>
+    <IonToggle checked={checked} onIonChange={e => setChecked(e.detail.checked)} />
     <Canvas id="models">
       <pointLight position={[10, 10, 10]} />
       <gridHelper args={[size, divs]}/>
@@ -72,6 +70,7 @@ export default function ThisCanvas(props) {
       </TransformControls>
       <OrbitControls makeDefault />
       {shapeArray}
+      {line}
     </Canvas>
   </>
 }
