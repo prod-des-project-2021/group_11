@@ -2,14 +2,19 @@ import { useRef, useState, useEffect, Suspense } from 'react'
 import ReactDOM from 'react-dom'
 import { Canvas, useThree } from '@react-three/fiber'
 import { OrbitControls, PerspectiveCamera, TransformControls, Line } from "@react-three/drei"
-import {IonToggle} from '@ionic/react'
+import {IonToggle, IonItem,
+  IonLabel,IonSelect,
+  IonSelectOption} from '@ionic/react'
+import axios from 'axios'
 
 
 export default function ThisCanvas(props) {
+  axios.defaults.baseURL = 'http://localhost:8000'
   let [controlTarget, setTarget] = useState()
   let [shapeArray, setShapeArray] = useState([])
   let [tempVars, setTempVars] = useState({})
   let [meshData, setMeshData] = useState([])
+  let [nsize, setNSize] = useState("")
   let [size, divs] = [100, 100]
   const [checked, setChecked] = useState(false);
 
@@ -19,17 +24,12 @@ export default function ThisCanvas(props) {
     setMeshData([])
   }, [])
 
-  let getId= (id) =>{
-    return id
-  }
 
   let addShape = (newSize) => {
     let [x, z] = [Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1), Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1)]
-    //setShapeArray([...shapeArray, <Cylinder position={[x, 0, z]} />])
     let tempArray = shapeArray.flat()
-    let newShape =  <Cylinder position={[x, 0, z]} newSize={newSize} /*getPos={(pos, id)=>getPos(pos,id)}*/keyid={tempArray.length} key={tempArray.length}/>
+    let newShape =  <Cylinder position={[x, 0, z]} newSize={newSize} keyid={tempArray.length} key={tempArray.length}/>
     tempArray.push(newShape)
-    setShapeArray([])
     setShapeArray([tempArray.flat()])
   }
 
@@ -53,31 +53,43 @@ export default function ThisCanvas(props) {
       tempdata.push(meshObj)
       setMeshData(tempdata)
     },[])
-
-    useEffect(() => {
-      if(mesh.current.position)
-      {
-        //props.getPos(mesh.current.position, id)
-      }
-    })
-
-
     return (
       <mesh
         {...props}
         ref={mesh}
         onClick={(event) => { setTarget(mesh.current)}}
-        onPointerOver={(event) => {setHover(true); meshData.map(i=>console.log(i.mesh.position))}}
+        onPointerOver={(event) => {setHover(true)}}
         onPointerOut={(event) => setHover(false)}>
         <cylinderGeometry args={newSize} />
         <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
       </mesh>
     )
   }
-  meshData.map(i=> console.log(i.mesh.position))
+
+  let sendData=()=>{
+    let postData =[]
+    for(let i=0; i<shapeArray[0].length;i++){
+      let shape = shapeArray[0][i]
+      let mesh = meshData.find(x=>x.id == shape.key)
+      postData.push({"id":shape.key,"shape":shape.type.name,"size":shape.props.newSize,"pos":mesh.mesh.position})
+    }
+    console.log(postData)
+  }
+
+
   return <>
-    <button onClick={() => addShape("gargantuan")}>add box</button>
-    <button >get Json data</button>
+    <IonItem>
+      <IonLabel>Size</IonLabel>
+      <IonSelect value = {nsize} onIonChange={(e)=>setNSize(e.detail.value)} okText="Okay" cancelText="Dismiss">
+        <IonSelectOption value="small">small</IonSelectOption>
+        <IonSelectOption value="medium">medium</IonSelectOption>
+        <IonSelectOption value="large">large</IonSelectOption>
+        <IonSelectOption value="huge">huge</IonSelectOption>
+        <IonSelectOption value="gargantuan">gargantuan</IonSelectOption>
+      </IonSelect>
+    </IonItem>
+    <button onClick={() => addShape(nsize)}>add unit</button>
+    <button onClick={()=>sendData()}>get Json data</button>
     <IonToggle checked={checked} onIonChange={e => setChecked(e.detail.checked)} />
     <Canvas id="models">
       <pointLight position={[10, 10, 10]} />
