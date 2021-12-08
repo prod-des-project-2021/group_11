@@ -74,6 +74,7 @@ export default function ThisCanvas(props) {
       postData.push({"id":shape.key,"shape":shape.type.name,"size":shape.props.newSize,"pos":mesh.mesh.position})
     }
     console.log(postData)
+    axios.get("/lol").then(function (res){console.log(res)}).catch(function(err){console.log(err)})
   }
 
 
