@@ -9,25 +9,24 @@ import CanvasThree from './canvas/CanvasThree.jsx';
 
 
 const Tab1: React.FC = () => {
-
-let [shapeArray, setShapeArray] = useState([])
-/*const addShape =(n:any)=>{
-  let tempArray:any = shapeArray.map(i => i)
-  let newArray = tempArray.push(n)
-  setShapeArray(newArray)
-
-}*/
-
-
-//removed evil <ioncontent> that caused bullshittery with my precious 
-  return (<IonPage>
+let [ctrlMode, setCtrlMode] = useState("")
+let changeMode = (key:String)=>{
+  switch (key) {
+    case "1":setCtrlMode("translate"); break;
+    case "2":setCtrlMode("rotate"); break;
+    case "3":setCtrlMode("scale"); break;
+    default : setCtrlMode("translate"); break;
+  }
+}
+//removed evil <ioncontent> that caused bullshittery with my precious
+  return (<IonPage onKeyPress={(e:any)=>changeMode(e.key)} tabIndex={0}>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Map</IonTitle>
-          
+
         </IonToolbar>
       </IonHeader>
-      <CanvasThree id="models"/>
+      <CanvasThree id="models" ctrlMode={ctrlMode}/>
     </IonPage>);
 };
 
