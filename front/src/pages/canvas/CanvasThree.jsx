@@ -1,15 +1,17 @@
 import { useRef, useState, useEffect, Suspense } from 'react'
 import ReactDOM from 'react-dom'
 import { Canvas, useThree } from '@react-three/fiber'
-import { OrbitControls, PerspectiveCamera, TransformControls, Line } from "@react-three/drei"
+import { OrbitControls, PerspectiveCamera, TransformControls, Line, Plane, Environment } from "@react-three/drei"
 import {IonToggle, IonItem,
   IonLabel,IonSelect,
   IonSelectOption} from '@ionic/react'
 import axios from 'axios'
 import Shape from './shape.jsx'
+import Cylinder from './Cylinder.jsx'
 
 
 export default function ThisCanvas(props) {
+  //set axios default url, only type /addr in axios requests to make it work
   axios.defaults.baseURL = 'http://localhost:8000'
   let [controlTarget, setTarget] = useState()
   let [shapeArray, setShapeArray] = useState([])
@@ -20,9 +22,9 @@ export default function ThisCanvas(props) {
   let [ctrlMode, setCtrlMode] = useState("")
   const [checked, setChecked] = useState(false);
 
-  //initialise empty arrays incase of reloads
+  //initialise arrays incase of reloads
   useEffect(() => {
-    setShapeArray([])
+    setShapeArray([<Plane args={[size,divs]} rotation={[-1.57,0,0]}/>])
     setMeshData([])
   }, [])
 
@@ -32,61 +34,41 @@ export default function ThisCanvas(props) {
       setCtrlMode("translate")
     else
       setCtrlMode(props.ctrlMode)
-
   },[props.ctrlMode])
-  let addShape = (newSize) => {
-    let [x, z] = [Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1), Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1)]
-    let tempArray = shapeArray.flat()
-    let newShape =  <Cylinder position={[x, 0, z]} newSize={newSize} keyid={tempArray.length} key={tempArray.length}/>
-    tempArray.push(newShape)
-    setShapeArray([tempArray.flat()])
-  }
 
+
+//add meshes into meshData without fucking things over
   let addMesh= (nmesh)=>{
     let tempData = meshData
     tempData.push(nmesh)
     setMeshData(tempData)
   }
-  let addNewShapeToArray=(shape)=>{
+
+//add things into shapeArray so that the data is readable when posting to server
+  let newShapeToArray=(shape)=>{
     let tempArray = shapeArray.flat()
     tempArray.push(shape)
     setShapeArray([tempArray.flat()])
   }
 
-  let line = checked ? <Line points={[[0, 0, 0], [-1.2, 0, 0]]} color="red" lineWidth={1} dashed={true} /> :null
-  function Cylinder(props) {
-    // This reference will give us direct access to the mesh
-    const mesh = useRef()
-    const [hovered, setHover] = useState(false)
-    let newSize
-    switch(props.newSize) {
-      case "small": {newSize = [0.25, 0.25, 0.5,8,1]} break;
-      case "medium": {newSize = [0.5, 0.5, 0.5,8,1]} break;
-      case "large": {newSize = [1, 1, 0.5,8,1]} break;
-      case "huge": {newSize = [1.5, 1.5, 0.5,8,1]} break;
-      case "gargantuan": {newSize = [2, 2, 0.5,8,1]} break;
-
-    }
-
-    useEffect(()=>{
-      let meshObj = {"id":props.keyid, "mesh" : mesh.current}
-      let tempdata = meshData
-      tempdata.push(meshObj)
-      setMeshData(tempdata)
-    },[])
-    return (
-      <mesh
-        {...props}
-        ref={mesh}
-        onClick={(event) => { setTarget(mesh.current)}}
-        onPointerOver={(event) => {setHover(true)}}
-        onPointerOut={(event) => setHover(false)}>
-        <cylinderGeometry args={newSize} />
-        <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
-      </mesh>
-    )
+  //add new units
+  let addUnit = (newSize) => {
+    //random x & z coords for units
+    let [x, z] = [Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1), Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1)]
+    let newShape =  <Cylinder position={[x, 0, z]} newSize={newSize} keyid={shapeArray.length} setTarget={(mesh)=>setTarget(mesh)} key={shapeArray.length} newMesh={(nmesh)=>addMesh(nmesh)}/>
+    newShapeToArray(newShape)
   }
 
+  //create new shape, use as terrain or buildings or some shit
+  function makeShape(){
+    let newShape = <Shape setTarget={(mesh)=>setTarget(mesh)} newMesh={(nmesh)=>addMesh(nmesh)} position={[0,0,0]} keyid={shapeArray.length} key={shapeArray.length}/>
+    newShapeToArray(newShape)
+  }
+  //nabeels line, very important
+  let line = checked ? <Line points={[[0, 0, 0], [-1.2, 0, 0]]} color="red" lineWidth={1} dashed={true} /> :null
+
+
+//send data to server
   let sendData=()=>{
     let postData =[]
     for(let i=0; i<shapeArray[0].length;i++){
@@ -99,10 +81,7 @@ export default function ThisCanvas(props) {
     axios.get("/lol").then(function (res){console.log(res)}).catch(function(err){console.log(err)})
   }
 
-  function makeShape(){
-    let newShape = <Shape setTarget={(mesh)=>setTarget(mesh)} newMesh={(nmesh)=>addMesh(nmesh)} position={[0,0,0]} keyid={shapeArray.length} key={shapeArray.length}/>
-    addNewShapeToArray(newShape)
-  }
+
 
   return <>
     <IonItem>
@@ -116,13 +95,13 @@ export default function ThisCanvas(props) {
       </IonSelect>
     </IonItem>
     <button onClick={() => makeShape()}>add thing</button>
-    <button onClick={() => addShape(nsize)}>add unit</button>
+    <button onClick={() => addUnit(nsize)}>add unit</button>
     <button onClick={()=>sendData()}>get Json data</button>
     <IonToggle checked={checked} onIonChange={e => setChecked(e.detail.checked)} />
     <Canvas id="models" onPointerMissed={(e)=>console.log(e.pageX, e.pageY)}>
       <pointLight position={[0, 100, 0]} />
       <gridHelper args={[size, divs]}/>
-      <TransformControls mode={ctrlMode} object={controlTarget} size={0.5} translationSnap={1}>
+      <TransformControls mode={ctrlMode} object={controlTarget} translationSnap={1}>
       </TransformControls>
       <OrbitControls makeDefault />
       {shapeArray}
