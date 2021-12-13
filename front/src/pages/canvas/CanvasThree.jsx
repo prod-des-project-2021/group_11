@@ -10,6 +10,7 @@ import {
 import axios from 'axios'
 import Shape from './shape.jsx'
 import Cylinder from './Cylinder.jsx'
+import './canvasStyle.css'
 
 function MeasureLine(props) {
   console.log("inside", props.startPos)
