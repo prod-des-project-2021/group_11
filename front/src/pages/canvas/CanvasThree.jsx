@@ -131,7 +131,7 @@ export default function ThisCanvas(props) {
       postData.push({ "id": shape.key, "type": mesh.mesh.geometry.type, "size": savesize, "pos": mesh.mesh.position, "rot": [mesh.mesh.rotation.x, mesh.mesh.rotation.y, mesh.mesh.rotation.z], "scale": mesh.mesh.scale })
     }
     console.log(postData)
-    axios.get("/lol").then(function (res) { console.log(res) }).catch(function (err) { console.log(err) })
+    axios.get("/echo").then(function (res) { console.log(res) }).catch(function (err) { console.log(err) })
   }
 
   return <>
