@@ -12,19 +12,10 @@ import Shape from './shape.jsx'
 import Cylinder from './Cylinder.jsx'
 
 function MeasureLine(props) {
+  console.log("inside", props.startPos)
   const ref = useRef()
-  console.log(props.startPos)
-  useFrame((state) => {
-    ref.current.setPoints(
-      [props.startPos.x, props.startPos.y, props.startPos.z],
-      [props.endPos.x, props.endPos.y, props.endPos.z],
-      // [5, 0, 0] // Optional: mid-point
-    )
-  }, [])
-  return <QuadraticBezierLine ref={ref} 
-    color="black"
-    lineWidth={1}
-    dashed={false} />
+  return <QuadraticBezierLine ref={ref} start={props.startPos} end={props.endPos}
+  />
 }
 
 
@@ -148,13 +139,14 @@ export default function ThisCanvas(props) {
     return object;
 
   }*/
+  
+  
+
+  let smth = controlTarget ? <MeasureLine startPos={controlTarget.position} endPos={[0, 0, 0]} />
+  : null
 
 
-
-  let smth = controlTarget ? <MeasureLine startPos={controlTarget.position} endPos={[10, 0, 10]}
-  /> : null
-
-
+  
 
 
 
@@ -193,7 +185,7 @@ export default function ThisCanvas(props) {
     <Canvas id="models" onPointerMissed={(e) => console.log(e.pageX, e.pageY)}>
       <pointLight position={[0, 100, 0]} />
       <gridHelper args={[size, divs]} />
-      <TransformControls change={console.log(controlTarget)} mode={ctrlMode} object={controlTarget} translationSnap={1}>
+      <TransformControls mode={ctrlMode} object={controlTarget} translationSnap={1}>
       </TransformControls>
       <OrbitControls makeDefault />
       {shapeArray}
