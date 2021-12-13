@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, Suspense } from 'react'
 import ReactDOM from 'react-dom'
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas, useThree , useFrame} from '@react-three/fiber'
 import { OrbitControls, PerspectiveCamera, TransformControls, Line, Plane, Environment } from "@react-three/drei"
 import {IonToggle, IonItem,
   IonLabel,IonSelect,
@@ -24,7 +24,7 @@ export default function ThisCanvas(props) {
 
   //initialise arrays incase of reloads
   useEffect(() => {
-    setShapeArray([<Plane args={[size,divs]} rotation={[-1.57,0,0]}/>])
+    setShapeArray([<Plane args={[size,divs]} rotation={[-1.57,0,0]} key={0}/>])
     setMeshData([])
   }, [])
 
@@ -79,33 +79,35 @@ export default function ThisCanvas(props) {
   let addUnit = (newSize) => {
     //random x & z coords for units
     let [x, z] = [Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1), Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1)]
-    let newShape =  <Cylinder position={[x, 0, z]} newSize={newSize} keyid={shapeArray.length} setTarget={(mesh)=>setTarget(mesh)} key={shapeArray.length} newMesh={(nmesh)=>addMesh(nmesh)}/>
+    let newShape =  <Cylinder position={[x, 0, z]} newSize={newSize} keyid={shapeArray[0].length} setTarget={(mesh)=>setTarget(mesh)} key={shapeArray[0].length} newMesh={(nmesh)=>addMesh(nmesh)}/>
     newShapeToArray(newShape)
   }
 
   //create new shape, use as terrain or buildings or some shit
   function makeShape(){
-    let newShape = <Shape setTarget={(mesh)=>setTarget(mesh)} newMesh={(nmesh)=>addMesh(nmesh)} position={[0,0,0]} keyid={shapeArray.length} key={shapeArray.length}/>
+    let newShape = <Shape setTarget={(mesh)=>setTarget(mesh)} newMesh={(nmesh)=>addMesh(nmesh)} position={[0,0,0]} keyid={shapeArray[0].length} key={shapeArray[0].length}/>
     newShapeToArray(newShape)
   }
   //nabeels line, very important
-  let line = checked ? <Line points={[[0, 0, 0], [-1.2, 0, 0]]} color="red" lineWidth={1} dashed={true} /> :null
-
+  let line = (checked && controlTarget) ? <Line points={[controlTarget.position, [0, 0, 0]]} color="red" lineWidth={2} /> :null
+  const measure =(start) =>{
+    console.log(line)
+  }
 
 //send data to server
   let sendData=()=>{
     let postData =[]
-    for(let i=0; i<shapeArray[0].length;i++){
+    console.log(shapeArray[0].length)
+    for(let i=1; i<shapeArray[0].length;i++){
       let shape = shapeArray[0][i]
-      let mesh = meshData.find(x=>x.id == shape.key)
+      let mesh = meshData[i-1]
       let savesize = shape.props.newSize? shape.props.newSize : "large"
+      console.log(mesh)
       postData.push({"id":shape.key,"type":mesh.mesh.geometry.type,"size":savesize,"pos":mesh.mesh.position, "rot": [mesh.mesh.rotation.x,mesh.mesh.rotation.y,mesh.mesh.rotation.z], "scale": mesh.mesh.scale})
     }
     console.log(postData)
     axios.get("/lol").then(function (res){console.log(res)}).catch(function(err){console.log(err)})
   }
-
-
 
   return <>
     <IonItem>

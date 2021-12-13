@@ -17,9 +17,14 @@ export default function Cylinder(props) {
   }
 
   useEffect(()=>{
-    let meshObj = {"id":props.keyid, "mesh" : mesh.current}
+    let meshObj = {"id":(props.keyid?props.keyid:1), "mesh" : mesh.current}
     props.newMesh(meshObj)
   },[])
+
+  useEffect(()=>{
+    
+  })
+
   return (
     <mesh
       {...props}

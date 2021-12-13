@@ -9,7 +9,7 @@ export default function Shape(props) {
   const mesh = useRef()
   const [hovered, setHover] = useState(false)
   useEffect(()=>{
-    let meshObj = {"id":props.keyid, "mesh" : mesh.current}
+    let meshObj = {"id":(props.keyid?props.keyid:1), "mesh" : mesh.current}
     props.newMesh(meshObj)
   },[])
   return (
