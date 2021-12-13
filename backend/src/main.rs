@@ -1,6 +1,7 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use serde::Deserialize;
+use actix_cors::Cors;
 
 struct AppState{
     app_name: String,
@@ -16,6 +17,7 @@ async fn index(data: web::Data<AppState>) -> String {
 
 #[post("/echo")] //decorator determins method and path
 async fn echo(req_body: String) -> impl Responder {
+    println!("Hello {}!", req_body);
     HttpResponse::Ok().body(req_body)
 }
 
@@ -37,13 +39,14 @@ async fn manual_hello() -> impl Responder {
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
+        .wrap(Cors::permissive())
             .data(AppState{app_name:String::from("Actix-web")})
             .service(index) //example of attaching route
             .service(echo)
             .service(get_info)
             .route("/hey", web::get().to(manual_hello)) //example of manual routing
     })
-    .bind("127.0.0.1:8080")? //port
+    .bind("127.0.0.1:8000")? //port
     .run()
     .await
 }
