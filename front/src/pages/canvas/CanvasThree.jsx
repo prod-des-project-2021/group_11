@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, Suspense } from 'react'
 import ReactDOM from 'react-dom'
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { OrbitControls, PerspectiveCamera, TransformControls, Line, Plane, Environment, QuadraticBezierLine } from "@react-three/drei"
+import { OrbitControls, PerspectiveCamera, TransformControls, Line, Plane } from "@react-three/drei"
 import {
   IonToggle, IonItem,
   IonLabel, IonSelect,
@@ -12,10 +12,21 @@ import Shape from './shape.jsx'
 import Cylinder from './Cylinder.jsx'
 
 function MeasureLine(props) {
-  console.log("inside", props.startPos)
+  let [pos, setPos] = useState([])
+
   const ref = useRef()
-  return <QuadraticBezierLine ref={ref} start={props.startPos} end={props.endPos}
-  />
+
+  let [line, setLine] = useState(<Line ref={ref} points={[[1,1,1],props.endPos]} lineWidth={3}/>)
+  let updateLine = (newPos) => {
+    setPos(newPos)
+    setLine(<Line ref={ref} points={[pos,props.endPos]} lineWidth={2}/>)
+  }
+
+  useFrame(()=>{
+    let tempP = props.Pos(props.keyid)
+    updateLine(tempP) 
+  }, [])
+  return line
 }
 
 
@@ -66,19 +77,26 @@ export default function ThisCanvas(props) {
   let addUnit = (newSize) => {
     //random x & z coords for units
     let [x, z] = [Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1), Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1)]
-    let newShape = <Cylinder position={[x, 0, z]} newSize={newSize} keyid={shapeArray.length} setTarget={(mesh) => setTarget(mesh)} key={shapeArray.length} newMesh={(nmesh) => addMesh(nmesh)} />
+    let key = shapeArray[0].length != undefined ? shapeArray[0].length : 1
+    let newShape = <Cylinder position={[x, 0, z]} newSize={newSize} keyid={key} setTarget={(mesh) => setTarget(mesh)} key={key} newMesh={(nmesh) => addMesh(nmesh)} />
     newShapeToArray(newShape)
   }
 
   //create new shape, use as terrain or buildings or some shit
   function makeShape() {
-    let newShape = <Shape setTarget={(mesh) => setTarget(mesh)} newMesh={(nmesh) => addMesh(nmesh)} position={[0, 0, 0]} keyid={shapeArray.length} key={shapeArray.length} />
+    let key = shapeArray[0].length != undefined ? shapeArray[0].length : 1
+    let newShape = <Shape setTarget={(mesh) => setTarget(mesh)} newMesh={(nmesh) => addMesh(nmesh)} position={[0, 0, 0]} keyid={key} key={key} />
     newShapeToArray(newShape)
   }
   //nabeels line, very important
   let line = checked ? <Line points={[[0, 0, 0], [-1.2, 0, 0]]} color="red" lineWidth={5} dashed={true} /> : null
 
-  let smth = controlTarget ? <MeasureLine startPos={controlTarget.position} endPos={[0, 0, 0]} />
+  let getTargetPos=(key)=>{
+    let mesh = meshData.find(mesh=>mesh.id === controlTarget.keyid).mesh.position
+    return mesh
+  }
+    
+  let smth = controlTarget ? <MeasureLine Pos={(key)=>getTargetPos(key)} startPos={[15,1,1]} endPos={[0, 0, 0]} keyid={controlTarget.keyid}/>
   : null
 
   //send data to server
@@ -119,9 +137,6 @@ export default function ThisCanvas(props) {
       {shapeArray}
       {line}
       {smth}
-
-
-
     </Canvas>
   </>
 
