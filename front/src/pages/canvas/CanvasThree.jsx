@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, Suspense } from 'react'
 import ReactDOM from 'react-dom'
-import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { OrbitControls, PerspectiveCamera, TransformControls, Line, Plane } from "@react-three/drei"
+import { Canvas, useThree, useFrame,Group } from '@react-three/fiber'
+import { OrbitControls, PerspectiveCamera, TransformControls, Line, Plane,group, Billboard, Text} from "@react-three/drei"
 import {
   IonToggle, IonItem,
   IonLabel, IonSelect,
@@ -17,16 +17,37 @@ function MeasureLine(props) {
   const ref = useRef()
 
   let [line, setLine] = useState(<Line ref={ref} points={[[1,1,1],props.endPos]} lineWidth={3}/>)
+  let [dis , setDis] = useState()
+
+
   let updateLine = (newPos) => {
     setPos(newPos)
     setLine(<Line ref={ref} points={[pos,props.endPos]} lineWidth={2}/>)
+    let difx = Math.pow(pos.x-props.endPos[0],2)
+    let dify = Math.pow(pos.y-props.endPos[1],2)
+    let difz = Math.pow(pos.z-props.endPos[2],2)
+    setDis(Math.sqrt(difx+dify+difz))
   }
 
   useFrame(()=>{
     let tempP = props.Pos(props.keyid)
     updateLine(tempP) 
   }, [])
-  return line
+
+
+
+  let toReturn = <group>
+    {line}
+    <Billboard
+    position={[(pos.x-props.endPos[0])/2,(pos.y-props.endPos[1])/2,(pos.z-props.endPos[2])/2]}  
+    follow={true}
+    lockX={false}
+    lockY={false}
+    lockZ={false}>
+      <Text fontSize={1} outlineWidth={0.1} outlineColor={"black"}>{(dis*5).toFixed(3)}</Text>
+    </Billboard>
+  </group>
+  return toReturn
 }
 
 
