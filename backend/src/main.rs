@@ -1,24 +1,33 @@
 #![feature(proc_macro_hygiene, decl_macro)]
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
-use serde::Deserialize;
+use actix_web::{get, web, App, HttpResponse, HttpServer, Responder, Result};
+use serde::{Serialize, Deserialize};
 use actix_cors::Cors;
+use std::collections::{HashMap};
 
-struct AppState{
-    app_name: String,
+
+#[derive(Debug, Serialize, Deserialize)]
+struct DataStructure{
+    id: String,
+    gtype: String,
+    pos: HashMap<String, i16>,
+    rot: Vec<f64>,
+    scale: HashMap<String, f64>,
+    size:String,
+    uuid:String
 }
 
 
-#[get("/")]
-async fn index(data: web::Data<AppState>) -> String {
-    let app_name = &data.app_name; // <- get app_name
-    format!("Hello {}!", app_name) // <- response with app_name
+#[derive(Debug, Serialize, Deserialize)]
+struct ReqData{
+    post_data : Vec<DataStructure>
 }
 
 
-#[post("/echo")] //decorator determins method and path
-async fn echo(req_body: String) -> impl Responder {
-    println!("Hello {}!", req_body);
-    HttpResponse::Ok().body(req_body)
+async fn echo(req_body:String) -> Result<String>{
+    let req_data : ReqData = serde_json::from_str(&req_body).unwrap();
+    let parse_data : Vec<DataStructure> = req_data.post_data;
+    
+    Ok(format!("{:#?}", parse_data))
 }
 
 #[derive(Deserialize)]
@@ -37,13 +46,13 @@ async fn manual_hello() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
+
+    HttpServer::new(move|| {
         App::new()
         .wrap(Cors::permissive())
-            .data(AppState{app_name:String::from("Actix-web")})
-            .service(index) //example of attaching route
-            .service(echo)
+             
             .service(get_info)
+            .route("/echo",web::post().to(echo))
             .route("/hey", web::get().to(manual_hello)) //example of manual routing
     })
     .bind("127.0.0.1:8000")? //port

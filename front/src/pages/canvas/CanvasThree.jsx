@@ -128,10 +128,10 @@ export default function ThisCanvas(props) {
       let shape = shapeArray[0][i]
       let mesh = meshData[i-1]
       let savesize = shape.props.newSize ? shape.props.newSize : "large"
-      postData.push({ "id": shape.key, "type": mesh.mesh.geometry.type, "size": savesize, "pos": mesh.mesh.position, "rot": [mesh.mesh.rotation.x, mesh.mesh.rotation.y, mesh.mesh.rotation.z], "scale": mesh.mesh.scale })
+      postData.push({ "id": shape.key, "gtype": mesh.mesh.geometry.type, "size": savesize, "pos": mesh.mesh.position, "rot": [mesh.mesh.rotation.x, mesh.mesh.rotation.y, mesh.mesh.rotation.z], "scale": mesh.mesh.scale, "uuid":mesh.mesh.uuid })
     }
-    console.log(postData)
-    axios.get("/echo").then(function (res) { console.log(res) }).catch(function (err) { console.log(err) })
+    console.log({"postData":postData})
+    axios.post("/echo", {"post_data":postData}).then(function (res) { console.log(res) }).catch(function (err) { console.log(err) })
   }
 
   return <>
