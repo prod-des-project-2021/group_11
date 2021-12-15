@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, Suspense } from 'react'
 import ReactDOM from 'react-dom'
-import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { OrbitControls, PerspectiveCamera, TransformControls, Line, Plane, Environment, QuadraticBezierLine } from "@react-three/drei"
+import { Canvas, useThree, useFrame,Group } from '@react-three/fiber'
+import { OrbitControls, PerspectiveCamera, TransformControls, Line, Plane,group, Billboard, Text} from "@react-three/drei"
 import {
   IonToggle, IonItem,
   IonLabel, IonSelect,
@@ -14,10 +14,42 @@ import Cylinder from './Cylinder.jsx'
 import { PopoverExample } from '../menu.jsx'
 
 function MeasureLine(props) {
-  console.log("inside", props.startPos)
+  let [pos, setPos] = useState([])
+
   const ref = useRef()
-  return <QuadraticBezierLine ref={ref} start={props.startPos} end={props.endPos}
-  />
+
+  let [line, setLine] = useState(<Line ref={ref} points={[[1,1,1],props.endPos]} lineWidth={3}/>)
+  let [dis , setDis] = useState()
+
+
+  let updateLine = (newPos) => {
+    setPos(newPos)
+    setLine(<Line ref={ref} points={[pos,props.endPos]} lineWidth={2}/>)
+    let difx = Math.pow(pos.x-props.endPos[0],2)
+    let dify = Math.pow(pos.y-props.endPos[1],2)
+    let difz = Math.pow(pos.z-props.endPos[2],2)
+    setDis(Math.sqrt(difx+dify+difz))
+  }
+
+  useFrame(()=>{
+    let tempP = props.Pos(props.keyid)
+    updateLine(tempP) 
+  }, [])
+
+
+
+  let toReturn = <group>
+    {line}
+    <Billboard
+    position={[(pos.x-props.endPos[0])/2,(pos.y-props.endPos[1])/2,(pos.z-props.endPos[2])/2]}  
+    follow={true}
+    lockX={false}
+    lockY={false}
+    lockZ={false}>
+      <Text fontSize={1} outlineWidth={0.1} outlineColor={"black"}>{(dis*5).toFixed(3)}</Text>
+    </Billboard>
+  </group>
+  return toReturn
 }
 
 
@@ -35,7 +67,7 @@ export default function ThisCanvas(props) {
 
   //initialise arrays incase of reloads
   useEffect(() => {
-    setShapeArray([<Plane args={[size, divs]} rotation={[-1.57, 0, 0]} />])
+    setShapeArray([<Plane args={[size,divs]} rotation={[-1.57,0,0]} key={0}/>])
     setMeshData([])
   }, [])
 
@@ -68,106 +100,41 @@ export default function ThisCanvas(props) {
   let addUnit = (newSize) => {
     //random x & z coords for units
     let [x, z] = [Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1), Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1)]
-    let newShape = <Cylinder position={[x, 0, z]} newSize={newSize} keyid={shapeArray.length} setTarget={(mesh) => setTarget(mesh)} key={shapeArray.length} newMesh={(nmesh) => addMesh(nmesh)} />
+    let key = shapeArray[0].length != undefined ? shapeArray[0].length : 1
+    let newShape = <Cylinder position={[x, 0, z]} newSize={newSize} keyid={key} setTarget={(mesh) => setTarget(mesh)} key={key} newMesh={(nmesh) => addMesh(nmesh)} />
     newShapeToArray(newShape)
   }
 
   //create new shape, use as terrain or buildings or some shit
   function makeShape() {
-    let newShape = <Shape setTarget={(mesh) => setTarget(mesh)} newMesh={(nmesh) => addMesh(nmesh)} position={[0, 0, 0]} keyid={shapeArray.length} key={shapeArray.length} />
+    let key = shapeArray[0].length != undefined ? shapeArray[0].length : 1
+    let newShape = <Shape setTarget={(mesh) => setTarget(mesh)} newMesh={(nmesh) => addMesh(nmesh)} position={[0, 0, 0]} keyid={key} key={key} />
     newShapeToArray(newShape)
   }
   //nabeels line, very important
   let line = checked ? <Line points={[[0, 0, 0], [-1.2, 0, 0]]} color="red" lineWidth={5} dashed={true} /> : null
 
-  const positions = [];
-  let splinePointsLength = 4;
-  const splines = {};
-  const ARC_SEGMENTS = 200;
-  const splineHelperObjects = [];
-  let scene;
-  /*const geometry = new THREE.BoxGeometry(20, 20, 20);*/
-
-  /*var makeLine = () => {
-    for (let i = 0; i < splinePointsLength; i++) {
-
-      addSplineObject(positions[i]);
-
-    }
-
-    positions.length = 0;
-
-    for (let i = 0; i < splinePointsLength; i++) {
-
-      positions.push(splineHelperObjects[i].position);
-
-    }
-
-    const geometry = <bufferGeometry position = {[]}/>;
-    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(ARC_SEGMENTS * 3), 3));
-
-    let curve = new THREE.CatmullRomCurve3(positions);
-    curve.curveType = 'catmullrom';
-    curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
-      color: 0xff0000,
-      opacity: 0.35
-    }));
-    curve.mesh.castShadow = true;
-    splines.uniform = curve;
-
+  let getTargetPos=(key)=>{
+    let mesh = meshData.find(mesh=>mesh.id === controlTarget.keyid).mesh.position
+    return mesh
   }
-
-  function addSplineObject(position) {
-
-    const material = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff });
-    const object = new THREE.Mesh(geometry, material);
-
-    if (position) {
-
-      object.position.copy(position);
-
-    } else {
-
-      object.position.x = Math.random() * 1000 - 500;
-      object.position.y = Math.random() * 600;
-      object.position.z = Math.random() * 800 - 400;
-
-    }
-
-    object.castShadow = true;
-    object.receiveShadow = true;
-    scene.add(object);
-    splineHelperObjects.push(object);
-    return object;
-
-  }*/
-  
-  
-
-  let smth = controlTarget ? <MeasureLine startPos={controlTarget.position} endPos={[0, 0, 0]} />
+    
+  let smth = controlTarget ? <MeasureLine Pos={(key)=>getTargetPos(key)} startPos={[15,1,1]} endPos={[0, 0, 0]} keyid={controlTarget.keyid}/>
   : null
 
-
-  
-
-
-
-
-
   //send data to server
-  let sendData = () => {
-    let postData = []
-    for (let i = 0; i < shapeArray[0].length; i++) {
+  let sendData=()=>{
+    let postData =[]
+    console.log(shapeArray[0].length)
+    for(let i=1; i<shapeArray[0].length;i++){
       let shape = shapeArray[0][i]
-      let mesh = meshData.find(x => x.id == shape.key)
+      let mesh = meshData[i-1]
       let savesize = shape.props.newSize ? shape.props.newSize : "large"
       postData.push({ "id": shape.key, "type": mesh.mesh.geometry.type, "size": savesize, "pos": mesh.mesh.position, "rot": [mesh.mesh.rotation.x, mesh.mesh.rotation.y, mesh.mesh.rotation.z], "scale": mesh.mesh.scale })
     }
     console.log(postData)
-    axios.get("/lol").then(function (res) { console.log(res) }).catch(function (err) { console.log(err) })
+    axios.get("/echo").then(function (res) { console.log(res) }).catch(function (err) { console.log(err) })
   }
-
-
 
   return <>
     <IonItem>
@@ -194,9 +161,6 @@ export default function ThisCanvas(props) {
       {shapeArray}
       {line}
       {smth}
-
-
-
     </Canvas>
   </>
 

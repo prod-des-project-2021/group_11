@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, Suspense } from 'react'
 import ReactDOM from 'react-dom'
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas, useThree, useFrame } from '@react-three/fiber'
 
 export default function Cylinder(props) {
   // This reference will give us direct access to the mesh
@@ -17,9 +17,16 @@ export default function Cylinder(props) {
   }
 
   useEffect(()=>{
-    let meshObj = {"id":props.keyid, "mesh" : mesh.current}
+    let key
+    if(props.keyid === undefined)
+      key = 1
+    else 
+      key = props.keyid
+    let meshObj = {"id":key, "mesh" : mesh.current}
     props.newMesh(meshObj)
   },[])
+
+
   return (
     <mesh
       {...props}
