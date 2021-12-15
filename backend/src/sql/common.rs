@@ -9,9 +9,10 @@ pub struct Users {
     pub password: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PostgresMapper)]
+#[pg_mapper(table="users-t")]
 pub struct ResUser{
-    pub id: i64,
+    pub id: i32,
     pub username: String,
 }
 
