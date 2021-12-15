@@ -131,7 +131,7 @@ export default function ThisCanvas(props) {
       postData.push({ "id": shape.key, "gtype": mesh.mesh.geometry.type, "size": savesize, "pos": mesh.mesh.position, "rot": [mesh.mesh.rotation.x, mesh.mesh.rotation.y, mesh.mesh.rotation.z], "scale": mesh.mesh.scale, "uuid":mesh.mesh.uuid })
     }
     console.log({"postData":postData})
-    axios.post("/echo", {"post_data":postData}).then(function (res) { console.log(res) }).catch(function (err) { console.log(err) })
+    axios.post("/echo", {"post_data":postData, "map_id":18}).then(function (res) { console.log(res) }).catch(function (err) { console.log(err) })
   }
 
   return <>
