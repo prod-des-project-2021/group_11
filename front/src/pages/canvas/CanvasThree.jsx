@@ -10,7 +10,8 @@ import {
 import axios from 'axios'
 import Shape from './shape.jsx'
 import Cylinder from './Cylinder.jsx'
-import './canvasStyle.css'
+//import './canvasStyle.css'
+import { PopoverExample } from '../menu.jsx'
 
 function MeasureLine(props) {
   console.log("inside", props.startPos)
@@ -179,6 +180,7 @@ export default function ThisCanvas(props) {
         <IonSelectOption value="gargantuan">gargantuan</IonSelectOption>
       </IonSelect>
     </IonItem>
+    <PopoverExample makeShape={() => makeShape()} addUnit={(nsize) => addUnit(nsize)} sendData={() => sendData}/>
     <button onClick={() => makeShape()}>add thing</button>
     <button onClick={() => addUnit(nsize)}>add unit</button>
     <button onClick={() => sendData()}>get Json data</button>
