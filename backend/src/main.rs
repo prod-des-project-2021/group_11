@@ -102,7 +102,7 @@ async fn add_user(req_body:String, db_pool:web::Data<Pool>) -> Result<HttpRespon
 //get map data from db
 async fn get_map_data_db(pool: &Pool, map_id:&Uuid) -> Result<Vec<sql::common::MapData>, PoolError> {
     let client: Client = pool.get().await?;
-    let stmt = client.prepare_cached("SELECT * FROM maps_t where map_id = $1").await?; //sql query
+    let stmt = client.prepare_cached("SELECT map_id, user_id, map::text FROM maps_t where map_id = $1").await?; //sql query
     let rows = client.query(&stmt, &[&map_id]).await?;
     Ok(rows
         .into_iter()
@@ -118,12 +118,19 @@ async fn get_map_data_db(pool: &Pool, map_id:&Uuid) -> Result<Vec<sql::common::M
 async fn get_map_data(db_pool : web::Data<Pool>, req: HttpRequest)-> Result<HttpResponse, Error> {
     let map_id =Uuid::parse_str(req.match_info().get("map_id").unwrap()).unwrap();
     let map = get_map_data_db(&db_pool, &map_id).await.unwrap();
-    Ok(HttpResponse::Ok().json(map))
+    let res_data: Vec<sql::common::ReqData> = map.into_iter().map(|item|
+        sql::common::ReqData{
+            map_id: item.map_id, 
+            user_id: item.user_id,
+            post_data: serde_json::from_str(&item.map).unwrap()
+        }
+    ).collect();
+    Ok(HttpResponse::Ok().json(res_data))
 }
 
 async fn get_all_map_data_db(pool: &Pool) -> Result<Vec<sql::common::MapData>, PoolError> {
     let client: Client = pool.get().await?;
-    let stmt = client.prepare_cached("SELECT * FROM maps_t").await?; //sql query
+    let stmt = client.prepare_cached("SELECT  map_id, user_id, map::text FROM maps_t").await?; //sql query
     let rows = client.query(&stmt, &[]).await?;
     Ok(rows
         .into_iter()
@@ -138,7 +145,16 @@ async fn get_all_map_data_db(pool: &Pool) -> Result<Vec<sql::common::MapData>, P
 #[get("/maps")]
 async fn get_all_maps(db_pool : web::Data<Pool>)->Result<HttpResponse, Error> {
     let map = get_all_map_data_db(&db_pool).await.unwrap();
-    Ok(HttpResponse::Ok().json(map))
+
+    //this bit here builds a propre json structure for frotend
+    let res_data: Vec<sql::common::ReqData> = map.into_iter().map(|item|
+        sql::common::ReqData{
+            map_id: item.map_id, 
+            user_id: item.user_id,
+            post_data: serde_json::from_str(&item.map).unwrap()
+        }
+    ).collect();
+    Ok(HttpResponse::Ok().json(res_data))
 }
 
 
