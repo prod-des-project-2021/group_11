@@ -108,10 +108,9 @@ export const PopoverExample = (props) => {
       <IonPopover isOpen={true}>
         <IonContent>
           <IonListHeader>Click Me!</IonListHeader>
-          <IonItem onClick={() => props.makeShape()}>Add Thing</IonItem>
-          <IonItem onClick={() => props.addUnit()}>Add Unit</IonItem>
-          <IonItem onClick={() => props.sendData()}>Get Json Data</IonItem>
-          <IonItem button>GitHub Repo</IonItem>
+          <IonItem button onClick={() => props.makeShape()}>Add Thing</IonItem>
+          <IonItem button onClick={() => props.addUnit()}>Add Unit</IonItem>
+          <IonItem button onClick={() => props.sendData()}>Get Json Data</IonItem>
           {/* <IonItem lines="none" detail={false} button onClick={onHide}>
             Close
           </IonItem> */}
