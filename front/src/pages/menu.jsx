@@ -89,6 +89,7 @@ const PopoverExample: React.FunctionComponent = (props) => {
 
 import React, { useState } from 'react';
 import { IonPopover, IonContent, IonItem, IonLabel, IonButton, IonListHeader } from '@ionic/react';
+import './canvasStyle.css'
 
 /* type Props = {
 
@@ -100,22 +101,32 @@ import { IonPopover, IonContent, IonItem, IonLabel, IonButton, IonListHeader } f
 
 
 export const PopoverExample = (props) => {
-  
+
+  let [openMenu, closeMenu] = useState(null);
+
+  function menuItems(props) {
+
+    !openMenu ? closeMenu(
+
+    <>
+        <IonPopover isOpen={true} >
+          <IonContent>
+            <IonListHeader>Click Me!</IonListHeader>
+            <IonItem button onClick={() => props.makeShape()}>Add Thing</IonItem>
+            <IonItem button onClick={() => props.addUnit()}>Add Unit</IonItem>
+            <IonItem button onClick={() => props.sendData()}>Get Json Data</IonItem>
+            {/* <IonItem lines="none" detail={false} button onClick={onHide}>
+            Close
+            </IonItem> */}
+          </IonContent>
+        </IonPopover>
+    </> ): closeMenu(null)
+  }
 
   return (
     <>
-      {/* Default */}
-      <IonPopover isOpen={true}>
-        <IonContent>
-          <IonListHeader>Click Me!</IonListHeader>
-          <IonItem button onClick={() => props.makeShape()}>Add Thing</IonItem>
-          <IonItem button onClick={() => props.addUnit()}>Add Unit</IonItem>
-          <IonItem button onClick={() => props.sendData()}>Get Json Data</IonItem>
-          {/* <IonItem lines="none" detail={false} button onClick={onHide}>
-            Close
-          </IonItem> */}
-        </IonContent>
-      </IonPopover>
+      <IonButton id="hover-button" onMouseOver={() => menuItems()} >Hover to open</IonButton>
+        {openMenu} 
     </>
   );
 };
