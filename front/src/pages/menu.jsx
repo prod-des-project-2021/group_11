@@ -88,7 +88,7 @@ const PopoverExample: React.FunctionComponent = (props) => {
  */
 
 import React, { useState } from 'react';
-import { IonPopover, IonContent, IonItem, IonLabel, IonButton, IonListHeader } from '@ionic/react';
+import { IonPopover, IonContent, IonItem, IonLabel, IonButton, IonListHeader, IonSelect, IonSelectOption } from '@ionic/react';
 import './canvasStyle.css'
 
 /* type Props = {
@@ -102,31 +102,43 @@ import './canvasStyle.css'
 
 export const PopoverExample = (props) => {
 
-  let [openMenu, closeMenu] = useState(null);
+  let [openMenu, closeMenu] = useState(false);
+  var randoms
+  let [nsize, setNSize] = useState("")
 
-  function menuItems(props) {
+   
 
-    !openMenu ? closeMenu(
+    openMenu ? randoms = (<>
 
-    <>
+      
         <IonPopover isOpen={true} >
           <IonContent>
             <IonListHeader>Click Me!</IonListHeader>
             <IonItem button onClick={() => props.makeShape()}>Add Thing</IonItem>
-            <IonItem button onClick={() => props.addUnit()}>Add Unit</IonItem>
+            <IonItem>
+              <IonLabel>Size</IonLabel>
+              <IonSelect value={nsize} onIonChange={(e) => { setNSize(e.detail.value); closeMenu(false); closeMenu(true);}} okText="Okay" cancelText="Dismiss">
+                <IonSelectOption value="small">small</IonSelectOption>
+                <IonSelectOption value="medium">medium</IonSelectOption>
+                <IonSelectOption value="large">large</IonSelectOption>
+                <IonSelectOption value="huge">huge</IonSelectOption>
+                <IonSelectOption value="gargantuan">gargantuan</IonSelectOption>
+              </IonSelect>
+            </IonItem>
+            <IonItem button onClick={()=>{ props.addUnit(nsize)}}>Add Unit</IonItem>
             <IonItem button onClick={() => props.sendData()}>Get Json Data</IonItem>
             {/* <IonItem lines="none" detail={false} button onClick={onHide}>
             Close
             </IonItem> */}
           </IonContent>
         </IonPopover>
-    </> ): closeMenu(null)
-  }
-
+      </> ): randoms = null
+  
+  
   return (
     <>
-      <IonButton id="hover-button" onMouseOver={() => menuItems()} >Hover to open</IonButton>
-        {openMenu} 
+      <IonButton id="hover-button" onMouseOver={() => closeMenu(!openMenu)} >Hover to open</IonButton>
+      {randoms}
     </>
   );
 };
