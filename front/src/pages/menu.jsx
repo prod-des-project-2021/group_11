@@ -30,8 +30,6 @@ export const PopoverExample = (props) => {
             </IonItem>
             <IonItem button onClick={() =>{ props.addUnit(nsize)}}>Add Unit</IonItem>
             <IonItem button onClick={() => props.sendData()}>Get Json Data</IonItem>
-            <IonItem button >Log in</IonItem>
-            <IonItem button onClick={() => props.register()}>Register</IonItem>
             {/* <IonItem lines="none" detail={false} button onClick={onHide}>
             Close
             </IonItem> */}
