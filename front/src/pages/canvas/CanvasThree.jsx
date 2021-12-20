@@ -13,9 +13,15 @@ import Cylinder from './Cylinder.jsx'
 import { v4 as uuidv4 } from 'uuid';
 //import './canvasStyle.css'
 import { PopoverExample } from '../menu.jsx'
+<<<<<<< HEAD
 import MapDataTab from '../MapDataTab.jsx'
 import Sphere from './Sphere.jsx'
 import Login from '../login.jsx'
+=======
+
+import Register from '../registeration.jsx'
+
+>>>>>>> three-js
 function MeasureLine(props) {
   let [pos, setPos] = useState([1,1,1])
   let [endPos, setEndPos] = useState([0,0,0])
