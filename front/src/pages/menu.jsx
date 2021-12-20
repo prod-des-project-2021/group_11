@@ -108,9 +108,8 @@ export const PopoverExample = (props) => {
 
    
 
-    openMenu ? randoms = (<>
-
-      
+    openMenu ? randoms = (
+    <>
         <IonPopover isOpen={true} >
           <IonContent>
             <IonItem button onClick={() => props.makeShape()}>Add Thing</IonItem>
