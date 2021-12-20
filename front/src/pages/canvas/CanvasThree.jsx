@@ -13,28 +13,33 @@ import Cylinder from './Cylinder.jsx'
 import { v4 as uuidv4 } from 'uuid';
 //import './canvasStyle.css'
 import { PopoverExample } from '../menu.jsx'
-
+import MapDataTab from '../MapDataTab.jsx'
+import Sphere from './Sphere.jsx'
 function MeasureLine(props) {
-  let [pos, setPos] = useState([])
-
+  let [pos, setPos] = useState([1,1,1])
+  let [endPos, setEndPos] = useState([0,0,0])
   const ref = useRef()
 
-  let [line, setLine] = useState(<Line ref={ref} points={[[1,1,1],props.endPos]} lineWidth={3}/>)
+  let [line, setLine] = useState(<Line ref={ref} points={[pos,endPos]} lineWidth={3}/>)
   let [dis , setDis] = useState()
 
 
-  let updateLine = (newPos) => {
-    setPos(newPos)
-    setLine(<Line ref={ref} points={[pos,props.endPos]} lineWidth={2}/>)
-    let difx = Math.pow(pos.x-props.endPos[0],2)
-    let dify = Math.pow(pos.y-props.endPos[1],2)
-    let difz = Math.pow(pos.z-props.endPos[2],2)
+  let updateLine = (newPos, keyId) => {
+    if(keyId === -1)
+      setEndPos(newPos)
+    else
+      setPos(newPos)
+    
+    setLine(<Line ref={ref} points={[pos,endPos]} lineWidth={2}/>)
+    let difx = Math.pow(pos.x-endPos.x,2)
+    let dify = Math.pow(pos.y-endPos.y,2)
+    let difz = Math.pow(pos.z-endPos.z,2)
     setDis(Math.sqrt(difx+dify+difz))
   }
 
   useFrame(()=>{
-    let tempP = props.Pos(props.keyid)
-    updateLine(tempP) 
+    let tempS = props.Pos(props.keyid)
+    updateLine(tempS, props.keyid) 
   }, [])
 
 
@@ -42,7 +47,7 @@ function MeasureLine(props) {
   let toReturn = <group>
     {line}
     <Billboard
-    position={[(pos.x-props.endPos[0])/2,(pos.y-props.endPos[1])/2,(pos.z-props.endPos[2])/2]}  
+    position={[endPos.x,endPos.y+1,endPos.z]}  
     follow={true}
     lockX={false}
     lockY={false}
@@ -102,26 +107,26 @@ export default function ThisCanvas(props) {
   let [id, setId] = useState()
   let [maps, setMaps] = useState()
   let [selMap, setMap] = useState(-1)
-  
+
+  let get_maps = ()=>{
+    axios.get("/maps/"+id).then(res=>{console.log(res.data); if(res.data) setMaps(res.data)})
+  }
   let login =(username, password) => {
     axios.post("login",{username: username, password: password})
     .then((res)=>{
       if(res.data)
         setId(res.data.id)
+        get_maps(id)
       console.log(res)
     })
   }
 
-  let get_maps = (id)=>{
-    axios.get("/maps/"+id).then(res=>{console.log(res.data); if(res.data) setMaps(res.data)})
-  }
 
-  let mapButtons = maps? maps.map((map,it) =><button onClick={()=>{setMap(it); console.log("clicked", it)}} key={map.map_id}>get {map.map_id}</button>):null
+
 
   //add new units
-  let addUnit = (newSize, datapl) => {
+  let addUnit = (newSize) => {
     //random x & z coords for units
-    console.log(datapl)
     let [x, z] = [Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1), Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1)]
     let key = shapeArray[0].length != undefined ? shapeArray[0].length : 1
     let newShape = <Cylinder position={[x, 0, z]} newSize={newSize} keyid={key} setTarget={(mesh) => setTarget(mesh)} key={key} newMesh={(nmesh) => addMesh(nmesh)} />
@@ -129,8 +134,7 @@ export default function ThisCanvas(props) {
   }
 
   //create new shape, use as terrain or buildings or some shit
-  function makeShape(datapl) {
-    console.log(datapl)
+  function makeShape() {
     let key = shapeArray[0].length != undefined ? shapeArray[0].length : 1
     let newShape = <Shape setTarget={(mesh) => setTarget(mesh)} newMesh={(nmesh) => addMesh(nmesh)} position={[0, 0, 0]} keyid={key} key={key} />
     newShapeToArray(newShape)
@@ -145,9 +149,9 @@ export default function ThisCanvas(props) {
         let datapl = maps[selMap].post_data[i]
         let newShape
         if(datapl.gtype === "CylinderGeometry")
-          newShape = <Cylinder position={[datapl.pos.x, datapl.pos.y, datapl.pos.z]} newSize={datapl.size} keyid={datapl.id} setTarget={(mesh) => setTarget(mesh)} key={datapl.id} newMesh={(nmesh) => addMesh(nmesh)} />
+          newShape = <Cylinder position={[datapl.pos.x, datapl.pos.y, datapl.pos.z]} scale={[datapl.scale.x, datapl.scale.y, datapl.scale.z]} rotation={datapl.rot} newSize={datapl.size} keyid={datapl.id} setTarget={(mesh) => setTarget(mesh)} key={datapl.id} newMesh={(nmesh) => addMesh(nmesh)} />
         else 
-          newShape = <Shape setTarget={(mesh) => setTarget(mesh)} newMesh={(nmesh) => addMesh(nmesh)} position={[0, 0, 0]} keyid={datapl.id} key={datapl.id} />
+          newShape = <Shape setTarget={(mesh) => setTarget(mesh)} newMesh={(nmesh) => addMesh(nmesh)} position={[0, 0, 0]} keyid={datapl.id} key={datapl.id} scale={[datapl.scale.x, datapl.scale.y, datapl.scale.z]} rotation={datapl.rot}/>
         
         tempArray.push(newShape);
        }
@@ -155,39 +159,46 @@ export default function ThisCanvas(props) {
     }
   },[selMap])
 
-  console.log(shapeArray)
+  console.log(meshData)
   //nabeels line, very important
-  let line = checked ? <Line points={[[0, 0, 0], [-1.2, 0, 0]]} color="red" lineWidth={5} dashed={true} /> : null
+  let sphere = <Sphere color="red" position={[0,0,0]} setTarget={(mesh) => setTarget(mesh)} newMesh={(nmesh) => addMesh(nmesh)} keyid={-1} key={-1}/>
+
 
   let getTargetPos=(key)=>{
     let mesh = meshData.find(mesh=>mesh.id === controlTarget.keyid).mesh.position
     return mesh
   }
-    
-  let smth = controlTarget ? <MeasureLine Pos={(key)=>getTargetPos(key)} startPos={[15,1,1]} endPos={[0, 0, 0]} keyid={controlTarget.keyid}/>
+  
+  let smth = controlTarget && checked ? <MeasureLine Pos={(key)=>getTargetPos(key)} keyid={controlTarget.keyid}/>
   : null
 
   //send data to server
   let sendData=()=>{
     let postData =[]
+    console.log("sending data")
     console.log(shapeArray[0].length)
     for(let i=1; i<shapeArray[0].length;i++){
       let shape = shapeArray[0][i]
       let mesh = meshData[i-1]
+      console.log(mesh)
       let savesize = shape.props.newSize ? shape.props.newSize : "large"
       postData.push({ "id": shape.key, "gtype": mesh.mesh.geometry.type, "size": savesize, "pos": mesh.mesh.position, "rot": [mesh.mesh.rotation.x, mesh.mesh.rotation.y, mesh.mesh.rotation.z], "scale": mesh.mesh.scale, "uuid":mesh.mesh.uuid })
     }
     console.log({"postData":postData})
-    axios.post("/newmap", {"post_data":postData, "map_id":uuidv4(), "user_id": 1}).then(function (res) { console.log(res) }).catch(function (err) { console.log(err) })
+
+    //handles new or update map
+    if(selMap != -1)
+    axios.post("/update", {"post_data":postData, "map_id":maps[selMap].map_id, "user_id": id}).then(function (res) { console.log(res) }).catch(function (err) { console.log(err) })
+    else
+      axios.post("/newmap", {"post_data":postData, "map_id":uuidv4(), "user_id": id}).then(function (res) { console.log(res) }).catch(function (err) { console.log(err) })
   }
 
   return <>
     <input type="text" onChange={(e)=>setUname(e.target.value)} placeholder="username"/>
     <input type="text" onChange={(e)=>setPassword(e.target.value)} placeholder='password'/>
     <button onClick={()=>login(username, password)}>login</button>
-    <button onClick={()=>get_maps(id)}>get maps</button>
-    {mapButtons}
-    <PopoverExample makeShape={() => makeShape()} addUnit={(nsize) => addUnit(nsize)} sendData={() => sendData}/>
+    <PopoverExample makeShape={() => makeShape()} addUnit={(nsize) => addUnit(nsize)} sendData={() => sendData()}/>
+    <MapDataTab  get_maps={()=>get_maps()} maps={maps} setMap={(it) => setMap(it)}/>
     <IonToggle checked={checked} onIonChange={e => setChecked(e.detail.checked)} />
     <Canvas id="models" onPointerMissed={(e) => console.log(e.pageX, e.pageY)}>
       <pointLight position={[0, 100, 0]} />
@@ -196,7 +207,7 @@ export default function ThisCanvas(props) {
       </TransformControls>
       <OrbitControls makeDefault />
       {shapeArray}
-      {line}
+      {sphere}
       {smth}
     </Canvas>
   </>

@@ -55,7 +55,6 @@ mod errors {
 async fn echo(req_body:String) -> Result<String>{
     let req_data : sql::common::ReqData = serde_json::from_str(&req_body).unwrap();
     let parse_data : Vec<sql::common::DataStructure> = req_data.post_data;
-    println!("{:#?}", parse_data);
     Ok(format!("{}", json!(parse_data)))
 }
 
@@ -90,11 +89,8 @@ async fn add_user_db(client: &Client,user: sql::common::Users) ->Result<Vec<sql:
 
 async fn add_user(req_body:String, db_pool:web::Data<Pool>) -> Result<HttpResponse, Error>{
     let req_data : sql::common::Users = serde_json::from_str(&req_body).unwrap();
-    println!("{}, {}", req_data.username, req_data.password);
-
     let client : Client = db_pool.get().await.map_err(MyError::PoolError)?;
     let new_user = add_user_db(&client, req_data).await.unwrap();
-    println!("{:#?}", new_user);
     Ok(HttpResponse::Ok().json(new_user))
 }
 
@@ -113,7 +109,6 @@ async fn login (req_body : String, db_pool: web::Data<Pool>) -> Result<HttpRespo
     let req_user: sql::common::Users = serde_json::from_str(&req_body).unwrap();
     let client : Client = db_pool.get().await.map_err(MyError::PoolError)?;
     let found = login_db(&client, req_user).await.unwrap();
-    println!("{:#?}", found);
     Ok(HttpResponse::Ok().json(found))
 }
 
@@ -192,7 +187,6 @@ async fn get_user_maps_db(pool: &Pool, id: &i32) -> Result<Vec<sql::common::MapD
 #[get("/maps/{id}")]
 async fn get_users_maps(db_pool : web::Data<Pool>, req: HttpRequest)->Result<HttpResponse, Error> {
     let id =req.match_info().get("id").unwrap().parse::<i32>().unwrap();
-    println!("{}", id);
     let map = get_user_maps_db(&db_pool,&id).await.unwrap();
 
     //this bit here builds a propre json structure for frotend
@@ -207,14 +201,12 @@ async fn get_users_maps(db_pool : web::Data<Pool>, req: HttpRequest)->Result<Htt
 }
 
 //insert map data into db
-async fn add_map_db(client:&Client, map:sql::common::MapData) ->Result<sql::common::MapData, MyError>{
-    let stmt = client.prepare_cached("insert into maps_t select (data::maps_t).* from(values ($1,$2,$3)) as data").await?; //sql query
-    client.query(&stmt, &[&map.map_id, &map.user_id.to_string(), &map.map]).await?
-        .iter()
+async fn add_map_db(client:&Client, map:sql::common::MapData) ->Result<Vec<sql::common::MapData>, Error>{
+    let stmt = client.prepare_cached("insert into maps_t select (data::maps_t).* from(values ($1,$2,$3)) as data").await.unwrap(); //sql query
+    let rows = client.query(&stmt, &[&map.map_id.to_string(), &map.user_id.to_string(), &map.map]).await.unwrap();
+    Ok(rows.iter()
         .map( |row|sql::common::MapData::from_row_ref(row).unwrap())
-        .collect::<Vec<sql::common::MapData>>()
-        .pop()
-        .ok_or(MyError::NotFound)
+        .collect::<Vec<sql::common::MapData>>())
 }
 
 async fn add_map(db_pool : web::Data<Pool>, req_body:String)->Result<HttpResponse, Error>{
@@ -222,11 +214,37 @@ async fn add_map(db_pool : web::Data<Pool>, req_body:String)->Result<HttpRespons
     let data_to_db =sql::common::MapData{map_id: req_data.map_id, user_id:req_data.user_id, map:json!(req_data.post_data).to_string()};
     let client : Client = db_pool.get().await.map_err(MyError::PoolError)?;
     let new_map = add_map_db(&client, data_to_db).await?;
+    println!("{:#?}", &new_map);
     Ok(HttpResponse::Ok().json(new_map))
 }
 
 
+//update map in db
+async fn update_map_db(client:&Client, map:sql::common::MapData) ->Result<Vec<sql::common::MapData>, Error>{
+    let stmt = client.prepare_cached("insert into maps_t select (data::maps_t).* from(values ($1,$2,$3)) as data").await.unwrap(); //sql query
+    let rows = client.query(&stmt, &[&map.map_id.to_string(), &map.user_id.to_string(), &map.map]).await.unwrap();
+    Ok(rows.iter()
+        .map( |row|sql::common::MapData::from_row_ref(row).unwrap())
+        .collect::<Vec<sql::common::MapData>>())
+    
+}
 
+async fn drop_map_db (client:&Client, map:&sql::common::MapData) ->Result<Vec<sql::common::MapData>, Error>{
+    let stmt = client.prepare_cached("delete from maps_t where map_id =$1").await.unwrap();
+    let rows =client.query(&stmt, &[&map.map_id]).await.unwrap();
+    Ok(rows.iter()
+    .map( |row|sql::common::MapData::from_row_ref(row).unwrap())
+    .collect::<Vec<sql::common::MapData>>())
+}
+
+async fn update_map(db_pool : web::Data<Pool>, req_body:String)->Result<HttpResponse, Error>{
+    let req_data : sql::common::ReqData = serde_json::from_str(&req_body).unwrap();
+    let data_to_db =sql::common::MapData{map_id: req_data.map_id, user_id:req_data.user_id, map:json!(req_data.post_data).to_string()};
+    let client : Client = db_pool.get().await.map_err(MyError::PoolError)?;
+    let _drop_map = drop_map_db(&client, &data_to_db).await?;
+    let mut new_map = update_map_db(&client, data_to_db).await?;
+    Ok(HttpResponse::Ok().json(new_map.pop()))
+}
 
 //random shit made earlier for get requests
 async fn greet(req: HttpRequest) -> impl Responder {
@@ -260,6 +278,7 @@ async fn main() -> std::io::Result<()> {
             .route("/hey", web::get().to(manual_hello)) //example of manual routing
             .route("/newmap",web::post().to(add_map)) //add new map for user
             .route("/login", web::post().to(login)) //log user in
+            .route("/update", web::post().to(update_map)) //update map in db
     })
     .bind("127.0.0.1:8000")? //port
     .run()
