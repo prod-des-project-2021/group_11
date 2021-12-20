@@ -125,16 +125,20 @@ export default function ThisCanvas(props) {
     })
   }
 
-  let loggedin = succLog === false?<Login login={(username, password)=>login(username, password)}/>:null
-
-  //registeration things
-
-  let register =(username, password, confirmpassword) => {
-    axios.post("register", {username: username, password: password, confirmpassword: confirmpassword})
+  let register = (username, password) => {
+    axios.post("addUser",{username: username, password: password})
     .then((res)=>{
-
+      if(res.data.id)
+        setId(res.data.id)
+        setSuccLog(true)
+        get_maps(res.data.id)
+      console.log(res)
     })
   }
+
+
+  let loggedin = succLog === false?<Login login={(username, password)=>login(username, password)} register={(username, password)=>register(username, password)}/>:null
+
 
 
   //add new units
