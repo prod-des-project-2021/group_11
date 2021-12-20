@@ -13,6 +13,8 @@ import Cylinder from './Cylinder.jsx'
 //import './canvasStyle.css'
 import { PopoverExample } from '../menu.jsx'
 
+import Register from '../registeration.jsx'
+
 function MeasureLine(props) {
   let [pos, setPos] = useState([])
 
