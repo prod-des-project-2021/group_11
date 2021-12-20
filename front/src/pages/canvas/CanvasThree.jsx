@@ -11,6 +11,8 @@ import axios from 'axios'
 import Shape from './shape.jsx'
 import Cylinder from './Cylinder.jsx'
 import { v4 as uuidv4 } from 'uuid';
+//import './canvasStyle.css'
+import { PopoverExample } from '../menu.jsx'
 
 function MeasureLine(props) {
   let [pos, setPos] = useState([])
@@ -59,7 +61,7 @@ export default function ThisCanvas(props) {
   let [shapeArray, setShapeArray] = useState([])
   let [tempVars, setTempVars] = useState({})
   let [meshData, setMeshData] = useState([])
-  let [nsize, setNSize] = useState("")
+  
   let [size, divs] = [100, 100]
   let [ctrlMode, setCtrlMode] = useState("")
   const [checked, setChecked] = useState(false);
@@ -136,19 +138,7 @@ export default function ThisCanvas(props) {
   }
 
   return <>
-    <IonItem>
-      <IonLabel>Size</IonLabel>
-      <IonSelect value={nsize} onIonChange={(e) => setNSize(e.detail.value)} okText="Okay" cancelText="Dismiss">
-        <IonSelectOption value="small">small</IonSelectOption>
-        <IonSelectOption value="medium">medium</IonSelectOption>
-        <IonSelectOption value="large">large</IonSelectOption>
-        <IonSelectOption value="huge">huge</IonSelectOption>
-        <IonSelectOption value="gargantuan">gargantuan</IonSelectOption>
-      </IonSelect>
-    </IonItem>
-    <button onClick={() => makeShape()}>add thing</button>
-    <button onClick={() => addUnit(nsize)}>add unit</button>
-    <button onClick={() => sendData()}>get Json data</button>
+    <PopoverExample makeShape={() => makeShape()} addUnit={(nsize) => addUnit(nsize)} sendData={() => sendData}/>
     <IonToggle checked={checked} onIonChange={e => setChecked(e.detail.checked)} />
     <Canvas id="models" onPointerMissed={(e) => console.log(e.pageX, e.pageY)}>
       <pointLight position={[0, 100, 0]} />

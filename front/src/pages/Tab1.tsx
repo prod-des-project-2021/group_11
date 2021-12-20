@@ -6,8 +6,6 @@ import CanvasThree from './canvas/CanvasThree.jsx';
 
 
 
-
-
 const Tab1: React.FC = () => {
 let [ctrlMode, setCtrlMode] = useState("")
 let changeMode = (key:String)=>{
