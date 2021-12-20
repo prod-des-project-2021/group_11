@@ -16,6 +16,9 @@ import { PopoverExample } from '../menu.jsx'
 import MapDataTab from '../MapDataTab.jsx'
 import Sphere from './Sphere.jsx'
 import Login from '../login.jsx'
+
+import Register from '../registeration.jsx'
+
 function MeasureLine(props) {
   let [pos, setPos] = useState([1,1,1])
   let [endPos, setEndPos] = useState([0,0,0])
@@ -137,6 +140,7 @@ export default function ThisCanvas(props) {
   let loggedin = succLog === false?<Login login={(username, password)=>login(username, password)} register={(username, password)=>register(username, password)}/>:null
 
 
+
   //add new units
   let addUnit = (newSize) => {
     //random x & z coords for units
@@ -208,7 +212,7 @@ export default function ThisCanvas(props) {
 
   return <>
     {loggedin}
-    <PopoverExample makeShape={() => makeShape()} addUnit={(nsize) => addUnit(nsize)} sendData={() => sendData()}/>
+    <PopoverExample makeShape={() => makeShape()} addUnit={(nsize) => addUnit(nsize)} sendData={() => sendData()} login={(username, password)=>login(username, password)} />
     <MapDataTab  get_maps={()=>get_maps()} maps={maps} setMap={(it) => setMap(it)}/>
     <IonToggle checked={checked} onIonChange={e => setChecked(e.detail.checked)} />
     <Canvas id="models" onPointerMissed={(e) => console.log(e.pageX, e.pageY)}>
