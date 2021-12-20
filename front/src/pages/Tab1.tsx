@@ -1,4 +1,4 @@
-import {IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import {IonHeader, IonPage, IonTitle, IonToolbar, IonText } from '@ionic/react';
 import './Tab1.css';
 import React, {useState} from 'react';
 import CanvasThree from './canvas/CanvasThree.jsx';
@@ -20,8 +20,7 @@ let changeMode = (key:String)=>{
   return (<IonPage onKeyPress={(e:any)=>changeMode(e.key)} tabIndex={0}>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Map</IonTitle>
-
+          <IonTitle style={{textAlign: "center"}}>SimpleMaps <br/>Simple Maps For Simpletons Like Us!</IonTitle>
         </IonToolbar>
       </IonHeader>
       <CanvasThree id="models" ctrlMode={ctrlMode}/>
