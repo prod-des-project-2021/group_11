@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { IonContent, IonItem, IonLabel, IonButton, IonHeader, IonListHeader, IonSelect, IonSelectOption, IonIcon, IonInput, IonToolbar } from '@ionic/react';
+import { IonContent, IonButton, IonInput } from '@ionic/react';
 
-export function Register () {
+export function Register (props) {
     
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     
     function userRegister () {
+        props.register(username, password, confirmPassword)
         
     }
     
@@ -17,8 +18,7 @@ export function Register () {
                 <IonInput placeholder="Username" onIonChange={e => setUsername(e.target.value)}/>
                 <IonInput placeholder="Password" onIonChange={e => setPassword(e.target.value)}/>
                 <IonInput placeholder="Confirm Password" onIonChange={e => setConfirmPassword(e.target.value)}/>
-                <IonButton onClick={userRegister()}>Register</IonButton>
-                <p>Registered already? Click to Log in!</p>
+                <IonButton onClick={() => userRegister()}>Register</IonButton>
             </IonContent>
         
     )

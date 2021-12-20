@@ -13,15 +13,12 @@ import Cylinder from './Cylinder.jsx'
 import { v4 as uuidv4 } from 'uuid';
 //import './canvasStyle.css'
 import { PopoverExample } from '../menu.jsx'
-<<<<<<< HEAD
 import MapDataTab from '../MapDataTab.jsx'
 import Sphere from './Sphere.jsx'
 import Login from '../login.jsx'
-=======
 
 import Register from '../registeration.jsx'
 
->>>>>>> three-js
 function MeasureLine(props) {
   let [pos, setPos] = useState([1,1,1])
   let [endPos, setEndPos] = useState([0,0,0])
@@ -130,6 +127,15 @@ export default function ThisCanvas(props) {
 
   let loggedin = succLog === false?<Login login={(username, password)=>login(username, password)}/>:null
 
+  //registeration things
+
+  let register =(username, password, confirmpassword) => {
+    axios.post("register", {username: username, password: password, confirmpassword: confirmpassword})
+    .then((res)=>{
+
+    })
+  }
+
 
   //add new units
   let addUnit = (newSize) => {
@@ -202,7 +208,7 @@ export default function ThisCanvas(props) {
 
   return <>
     {loggedin}
-    <PopoverExample makeShape={() => makeShape()} addUnit={(nsize) => addUnit(nsize)} sendData={() => sendData()}/>
+    <PopoverExample makeShape={() => makeShape()} addUnit={(nsize) => addUnit(nsize)} sendData={() => sendData()} login={(username, password)=>login(username, password)} />
     <MapDataTab  get_maps={()=>get_maps()} maps={maps} setMap={(it) => setMap(it)}/>
     <IonToggle checked={checked} onIonChange={e => setChecked(e.detail.checked)} />
     <Canvas id="models" onPointerMissed={(e) => console.log(e.pageX, e.pageY)}>
