@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { PopoverExample } from '../menu.jsx'
 import MapDataTab from '../MapDataTab.jsx'
 import Sphere from './Sphere.jsx'
+import Login from '../login.jsx'
 function MeasureLine(props) {
   let [pos, setPos] = useState([1,1,1])
   let [endPos, setEndPos] = useState([0,0,0])
@@ -102,26 +103,26 @@ export default function ThisCanvas(props) {
   }, [props.ctrlMode])
 
   //login things
-  let [username, setUname] = useState("")
-  let [password, setPassword] = useState("")
   let [id, setId] = useState()
   let [maps, setMaps] = useState()
   let [selMap, setMap] = useState(-1)
+  const [succLog, setSuccLog] = useState(false)
 
-  let get_maps = ()=>{
-    axios.get("/maps/"+id).then(res=>{console.log(res.data); if(res.data) setMaps(res.data)})
+  let get_maps = (idn)=>{
+    axios.get("/maps/"+idn).then(res=>{console.log(res.data); if(res.data) setMaps(res.data)})
   }
   let login =(username, password) => {
     axios.post("login",{username: username, password: password})
     .then((res)=>{
-      if(res.data)
+      if(res.data.id)
         setId(res.data.id)
-        get_maps(id)
+        setSuccLog(true)
+        get_maps(res.data.id)
       console.log(res)
     })
   }
 
-
+  let loggedin = succLog === false?<Login login={(username, password)=>login(username, password)}/>:null
 
 
   //add new units
@@ -194,9 +195,7 @@ export default function ThisCanvas(props) {
   }
 
   return <>
-    <input type="text" onChange={(e)=>setUname(e.target.value)} placeholder="username"/>
-    <input type="text" onChange={(e)=>setPassword(e.target.value)} placeholder='password'/>
-    <button onClick={()=>login(username, password)}>login</button>
+    {loggedin}
     <PopoverExample makeShape={() => makeShape()} addUnit={(nsize) => addUnit(nsize)} sendData={() => sendData()}/>
     <MapDataTab  get_maps={()=>get_maps()} maps={maps} setMap={(it) => setMap(it)}/>
     <IonToggle checked={checked} onIonChange={e => setChecked(e.detail.checked)} />

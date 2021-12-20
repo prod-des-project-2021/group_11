@@ -1,27 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { IonContent, IonItem, IonLabel, IonButton, IonHeader, IonListHeader, IonSelect, IonSelectOption, IonIcon, IonInput, IonToolbar } from '@ionic/react';
+import { IonContent,  IonButton, IonInput } from '@ionic/react';
 
-export function login () {
+export default function Login (props) {
     
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     
-    function userLogin () {
-        
+    function loginUser () {
+        props.login(username, password)
     }
     
-    return (
-        <IonPage>
-            <IonHeader>
-                <IonToolbar>
-                    <IonTitle>Welcome to DnD Character Map! Please Log In!</IonTitle>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent>
-                <IonInput placeholder="Username" onIonChange={e => setUsername(e.target.value)}/>
-                <IonInput placeholder="Password" onIonChange={e => setPassword(e.target.value)}/>
-                <IonButton onClick={loginUser}>Login!</IonButton>
-            </IonContent>
-        </IonPage>
+    return (<>
+        <IonInput placeholder="Username" onIonChange={e => setUsername(e.target.value)}/>
+        <IonInput placeholder="Password" onIonChange={e => setPassword(e.target.value)}/>
+        <IonButton onClick={()=>loginUser()}>Login!</IonButton></>
     )
 }
