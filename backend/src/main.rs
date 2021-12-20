@@ -258,7 +258,7 @@ async fn main() -> std::io::Result<()> {
             .route("/echo",web::post().to(echo))
             .route("/addUser", web::post().to(add_user)) //add user
             .route("/hey", web::get().to(manual_hello)) //example of manual routing
-            .route("newmap",web::post().to(add_map)) //add new map for user
+            .route("/newmap",web::post().to(add_map)) //add new map for user
             .route("/login", web::post().to(login)) //log user in
     })
     .bind("127.0.0.1:8000")? //port
