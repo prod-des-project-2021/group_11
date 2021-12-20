@@ -72,6 +72,22 @@ export default function ThisCanvas(props) {
     setMeshData([])
   }, [])
 
+
+    //add meshes into meshData without fucking things over
+    let addMesh = (nmesh) => {
+      let tempData = meshData
+      tempData.push(nmesh)
+      setMeshData(tempData)
+    }
+  
+  
+  
+    //add things into shapeArray so that the data is readable when posting to server
+    let newShapeToArray = (shape) => {
+      let tempArray = shapeArray.flat()
+      tempArray.push(shape)
+      setShapeArray([tempArray.flat()])
+    }
   //switch between camera modes
   useEffect(() => {
     if (!props.ctrlMode)
@@ -80,26 +96,32 @@ export default function ThisCanvas(props) {
       setCtrlMode(props.ctrlMode)
   }, [props.ctrlMode])
 
-
-  //add meshes into meshData without fucking things over
-  let addMesh = (nmesh) => {
-    let tempData = meshData
-    tempData.push(nmesh)
-    setMeshData(tempData)
+  //login things
+  let [username, setUname] = useState("")
+  let [password, setPassword] = useState("")
+  let [id, setId] = useState()
+  let [maps, setMaps] = useState()
+  let [selMap, setMap] = useState(-1)
+  
+  let login =(username, password) => {
+    axios.post("login",{username: username, password: password})
+    .then((res)=>{
+      if(res.data)
+        setId(res.data.id)
+      console.log(res)
+    })
   }
 
-  //add things into shapeArray so that the data is readable when posting to server
-  let newShapeToArray = (shape) => {
-    let tempArray = shapeArray.flat()
-    tempArray.push(shape)
-    setShapeArray([tempArray.flat()])
+  let get_maps = (id)=>{
+    axios.get("/maps/"+id).then(res=>{console.log(res.data); if(res.data) setMaps(res.data)})
   }
 
-
+  let mapButtons = maps? maps.map((map,it) =><button onClick={()=>{setMap(it); console.log("clicked", it)}} key={map.map_id}>get {map.map_id}</button>):null
 
   //add new units
-  let addUnit = (newSize) => {
+  let addUnit = (newSize, datapl) => {
     //random x & z coords for units
+    console.log(datapl)
     let [x, z] = [Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1), Math.floor(Math.random() * size / 2) * (Math.round(Math.random()) ? 1 : -1)]
     let key = shapeArray[0].length != undefined ? shapeArray[0].length : 1
     let newShape = <Cylinder position={[x, 0, z]} newSize={newSize} keyid={key} setTarget={(mesh) => setTarget(mesh)} key={key} newMesh={(nmesh) => addMesh(nmesh)} />
@@ -107,11 +129,33 @@ export default function ThisCanvas(props) {
   }
 
   //create new shape, use as terrain or buildings or some shit
-  function makeShape() {
+  function makeShape(datapl) {
+    console.log(datapl)
     let key = shapeArray[0].length != undefined ? shapeArray[0].length : 1
     let newShape = <Shape setTarget={(mesh) => setTarget(mesh)} newMesh={(nmesh) => addMesh(nmesh)} position={[0, 0, 0]} keyid={key} key={key} />
     newShapeToArray(newShape)
   }
+
+  //load map from maps array
+  useEffect(() => {
+    if(selMap != -1)
+    {
+      let tempArray = [<Plane args={[size,divs]} rotation={[-1.57,0,0]} key={0}/>]
+      for(let i = 0; i < maps[selMap].post_data.length; i++){
+        let datapl = maps[selMap].post_data[i]
+        let newShape
+        if(datapl.gtype === "CylinderGeometry")
+          newShape = <Cylinder position={[datapl.pos.x, datapl.pos.y, datapl.pos.z]} newSize={datapl.size} keyid={datapl.id} setTarget={(mesh) => setTarget(mesh)} key={datapl.id} newMesh={(nmesh) => addMesh(nmesh)} />
+        else 
+          newShape = <Shape setTarget={(mesh) => setTarget(mesh)} newMesh={(nmesh) => addMesh(nmesh)} position={[0, 0, 0]} keyid={datapl.id} key={datapl.id} />
+        
+        tempArray.push(newShape);
+       }
+       setShapeArray([tempArray.flat()])
+    }
+  },[selMap])
+
+  console.log(shapeArray)
   //nabeels line, very important
   let line = checked ? <Line points={[[0, 0, 0], [-1.2, 0, 0]]} color="red" lineWidth={5} dashed={true} /> : null
 
@@ -138,6 +182,11 @@ export default function ThisCanvas(props) {
   }
 
   return <>
+    <input type="text" onChange={(e)=>setUname(e.target.value)} placeholder="username"/>
+    <input type="text" onChange={(e)=>setPassword(e.target.value)} placeholder='password'/>
+    <button onClick={()=>login(username, password)}>login</button>
+    <button onClick={()=>get_maps(id)}>get maps</button>
+    {mapButtons}
     <PopoverExample makeShape={() => makeShape()} addUnit={(nsize) => addUnit(nsize)} sendData={() => sendData}/>
     <IonToggle checked={checked} onIonChange={e => setChecked(e.detail.checked)} />
     <Canvas id="models" onPointerMissed={(e) => console.log(e.pageX, e.pageY)}>
